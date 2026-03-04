@@ -3,796 +3,1077 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IoT 新闻雷达 · GDELT</title>
+<title>IoT 新闻雷达</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+SC:wght@300;400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #050810;
-    --surface: #090d18;
-    --card: #0c1220;
-    --border: #162032;
-    --accent: #00ffe0;
-    --accent2: #ff6b35;
-    --accent3: #7b61ff;
-    --text: #dce8f0;
-    --muted: #4a6070;
-    --success: #00e5a0;
-    --warn: #ffb020;
-  }
+:root {
+  --bg: #f0f4f8;
+  --white: #ffffff;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --border2: #cbd5e1;
+  --accent: #0ea5e9;
+  --accent-dark: #0284c7;
+  --accent-light: #e0f2fe;
+  --green: #10b981;
+  --green-light: #d1fae5;
+  --orange: #f59e0b;
+  --orange-light: #fef3c7;
+  --red: #ef4444;
+  --red-light: #fee2e2;
+  --purple: #8b5cf6;
+  --purple-light: #ede9fe;
+  --text: #0f172a;
+  --text2: #475569;
+  --text3: #94a3b8;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow-lg: 0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Noto Sans SC', sans-serif;
-    font-weight: 300;
-    min-height: 100vh;
-  }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  min-height: 100vh;
+  line-height: 1.6;
+}
 
-  /* Animated background */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 80% 40% at 10% 0%, rgba(0,255,224,0.04) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 50% at 90% 100%, rgba(123,97,255,0.05) 0%, transparent 60%),
-      linear-gradient(rgba(0,255,224,0.015) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,255,224,0.015) 1px, transparent 1px);
-    background-size: auto, auto, 50px 50px, 50px 50px;
-    pointer-events: none;
-    z-index: 0;
-  }
+/* subtle dot grid */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 0;
+}
 
-  .wrap {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 36px 20px 60px;
-    position: relative;
-    z-index: 1;
-  }
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 20px 80px;
+  position: relative;
+  z-index: 1;
+}
 
-  /* ── HEADER ── */
-  .header { margin-bottom: 40px; }
+/* ── HERO ── */
+.hero {
+  margin-bottom: 36px;
+}
 
-  .header-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 6px;
-  }
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(14,165,233,0.25);
+}
 
-  .logo-block {}
+.pulse-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s infinite;
+}
 
-  .logo-eyebrow {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
 
-  .logo-eyebrow::before {
-    content: '';
-    display: inline-block;
-    width: 20px; height: 1px;
-    background: var(--accent);
-  }
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(32px, 6vw, 54px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -1px;
+  color: var(--text);
+  margin-bottom: 12px;
+}
 
-  h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(36px, 7vw, 64px);
-    letter-spacing: 3px;
-    line-height: 1;
-    color: #fff;
-  }
+h1 em {
+  font-style: normal;
+  color: var(--accent);
+}
 
-  h1 span { color: var(--accent); }
+.hero-sub {
+  font-size: 15px;
+  color: var(--text2);
+  max-width: 520px;
+  line-height: 1.7;
+}
 
-  .source-badge {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
-  }
+/* ── CARD ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 28px;
+  margin-bottom: 16px;
+}
 
-  .gdelt-label {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 2px;
-  }
+.card-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-  .gdelt-tag {
-    background: rgba(0,255,224,0.08);
-    border: 1px solid rgba(0,255,224,0.2);
-    color: var(--accent);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    padding: 4px 10px;
-    border-radius: 4px;
-    letter-spacing: 1px;
-  }
+.card-title::before {
+  content: '';
+  width: 14px; height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
 
-  .free-badge {
-    background: rgba(0,229,160,0.1);
-    border: 1px solid rgba(0,229,160,0.25);
-    color: var(--success);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    padding: 3px 8px;
-    border-radius: 4px;
-    letter-spacing: 1px;
-  }
+/* ── API KEY ── */
+.apikey-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
 
-  /* ── CONTROL PANEL ── */
-  .panel {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 28px;
-    position: relative;
-  }
+.apikey-input-wrap {
+  position: relative;
+  flex: 1;
+}
 
-  .panel::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 24px; right: 24px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0,255,224,0.4), transparent);
-  }
+.apikey-input-wrap input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  padding: 11px 44px 11px 16px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
 
-  .panel-title {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 18px;
-  }
+.apikey-input-wrap input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(14,165,233,0.12);
+  background: white;
+}
 
-  .controls {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 12px;
-    align-items: end;
-  }
+.eye-btn {
+  position: absolute;
+  right: 12px; top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--text3);
+  padding: 2px;
+  transition: color 0.2s;
+}
+.eye-btn:hover { color: var(--text2); }
 
-  @media (max-width: 600px) {
-    .controls { grid-template-columns: 1fr; }
-  }
+.key-status {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+  border: 1px solid;
+}
 
-  .ctrl-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
+.key-status.empty { background: var(--bg); border-color: var(--border); color: var(--text3); }
+.key-status.valid { background: var(--green-light); border-color: rgba(16,185,129,0.3); color: var(--green); }
+.key-status.invalid { background: var(--orange-light); border-color: rgba(245,158,11,0.3); color: var(--orange); }
 
-  .ctrl-label {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 2px;
-    color: var(--muted);
-    text-transform: uppercase;
-  }
+.key-hint {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 8px;
+  line-height: 1.5;
+}
 
-  input[type="date"] {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 14px;
-    padding: 10px 14px;
-    outline: none;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    color-scheme: dark;
-    width: 100%;
-  }
+.key-hint a { color: var(--accent); text-decoration: none; }
+.key-hint a:hover { text-decoration: underline; }
 
-  input[type="date"]:focus { border-color: var(--accent); }
+/* ── DATE / PERIOD ── */
+.mode-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 18px;
+  width: fit-content;
+}
 
-  .keyword-wrap {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
+.mode-tab {
+  padding: 7px 18px;
+  border-radius: 9px;
+  border: none;
+  background: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.18s;
+}
 
-  .kw-chip {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    border: 1px solid;
-    cursor: pointer;
-    transition: all 0.15s;
-    user-select: none;
-    letter-spacing: 0.5px;
-  }
+.mode-tab.active {
+  background: white;
+  color: var(--accent);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
 
-  .kw-chip input[type="checkbox"] { display: none; }
+.date-fields {
+  display: grid;
+  gap: 12px;
+}
 
-  .kw-chip.c1 { border-color: rgba(0,255,224,0.3); color: rgba(0,255,224,0.6); }
-  .kw-chip.c1.on { background: rgba(0,255,224,0.12); color: var(--accent); border-color: var(--accent); }
-  .kw-chip.c2 { border-color: rgba(255,107,53,0.3); color: rgba(255,107,53,0.6); }
-  .kw-chip.c2.on { background: rgba(255,107,53,0.12); color: var(--accent2); border-color: var(--accent2); }
-  .kw-chip.c3 { border-color: rgba(123,97,255,0.3); color: rgba(123,97,255,0.6); }
-  .kw-chip.c3.on { background: rgba(123,97,255,0.12); color: var(--accent3); border-color: var(--accent3); }
-  .kw-chip.c4 { border-color: rgba(255,176,32,0.3); color: rgba(255,176,32,0.6); }
-  .kw-chip.c4.on { background: rgba(255,176,32,0.12); color: var(--warn); border-color: var(--warn); }
+.date-fields.single { grid-template-columns: 1fr; }
+.date-fields.range { grid-template-columns: 1fr 1fr; }
 
-  .kw-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+@media (max-width: 500px) {
+  .date-fields.range { grid-template-columns: 1fr; }
+}
 
-  .btn-go {
-    background: var(--accent);
-    color: #000;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 26px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
+.field-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
 
-  .btn-go:hover { box-shadow: 0 0 20px rgba(0,255,224,0.35); transform: translateY(-1px); }
-  .btn-go:active { transform: none; }
-  .btn-go:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+input[type="date"] {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 11px 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  color-scheme: light;
+}
 
-  /* ── STATUS ── */
-  .status {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 12px;
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    display: none;
-    align-items: center;
-    gap: 10px;
-    letter-spacing: 1px;
-  }
+input[type="date"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(14,165,233,0.12);
+  background: white;
+}
 
-  .status.loading {
-    display: flex;
-    background: rgba(0,255,224,0.05);
-    border: 1px solid rgba(0,255,224,0.15);
-    color: var(--accent);
-  }
+/* quick period buttons */
+.quick-periods {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
 
-  .status.error {
-    display: flex;
-    background: rgba(255,80,80,0.05);
-    border: 1px solid rgba(255,80,80,0.2);
-    color: #ff5050;
-  }
+.qp-btn {
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: white;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
 
-  .spin {
-    width: 14px; height: 14px;
-    border: 2px solid rgba(0,255,224,0.2);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    flex-shrink: 0;
-  }
+.qp-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
 
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ── TOPICS ── */
+.topics-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 
-  /* ── RESULTS ── */
-  .results-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+.topic-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: white;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+}
 
-  .results-label {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--muted);
-    text-transform: uppercase;
-  }
+.topic-chip input { display: none; }
 
-  .results-stat {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: var(--success);
-    background: rgba(0,229,160,0.08);
-    border: 1px solid rgba(0,229,160,0.2);
-    padding: 3px 10px;
-    border-radius: 4px;
-    letter-spacing: 1px;
-  }
+.topic-chip .chip-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--border2);
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
 
-  .news-list { display: flex; flex-direction: column; gap: 12px; }
+.topic-chip.on {
+  background: var(--accent-light);
+  border-color: rgba(14,165,233,0.4);
+  color: var(--accent-dark);
+}
+.topic-chip.on .chip-dot { background: var(--accent); }
 
-  .news-item {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px 20px;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 12px 20px;
-    align-items: start;
-    transition: all 0.2s;
-    animation: fadeUp 0.35s ease both;
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
-  }
+.topic-chip.t2.on { background: var(--purple-light); border-color: rgba(139,92,246,0.4); color: var(--purple); }
+.topic-chip.t2.on .chip-dot { background: var(--purple); }
+.topic-chip.t3.on { background: var(--green-light); border-color: rgba(16,185,129,0.4); color: var(--green); }
+.topic-chip.t3.on .chip-dot { background: var(--green); }
+.topic-chip.t4.on { background: var(--orange-light); border-color: rgba(245,158,11,0.4); color: var(--orange); }
+.topic-chip.t4.on .chip-dot { background: var(--orange); }
 
-  .news-item:hover {
-    border-color: rgba(0,255,224,0.25);
-    background: #0f1828;
-    transform: translateX(3px);
-  }
+/* ── LANGUAGE ── */
+.lang-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+.lang-btn {
+  padding: 7px 16px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: white;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
 
-  .news-item:nth-child(1) { animation-delay: 0.03s; }
-  .news-item:nth-child(2) { animation-delay: 0.06s; }
-  .news-item:nth-child(3) { animation-delay: 0.09s; }
-  .news-item:nth-child(4) { animation-delay: 0.12s; }
-  .news-item:nth-child(5) { animation-delay: 0.15s; }
-  .news-item:nth-child(n+6) { animation-delay: 0.18s; }
+.lang-btn.active {
+  background: var(--accent-light);
+  border-color: rgba(14,165,233,0.4);
+  color: var(--accent-dark);
+}
 
-  .news-main {}
+/* ── SEARCH BUTTON ── */
+.search-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 15px 28px;
+  font-family: 'Syne', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 4px;
+  position: relative;
+  overflow: hidden;
+}
 
-  .news-top {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-  }
+.search-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+}
 
-  .news-domain {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    color: var(--accent);
-    letter-spacing: 1px;
-    background: rgba(0,255,224,0.07);
-    padding: 2px 7px;
-    border-radius: 3px;
-    border: 1px solid rgba(0,255,224,0.15);
-  }
+.search-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(14,165,233,0.35);
+}
 
-  .news-lang {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 9px;
-    color: var(--muted);
-    letter-spacing: 1px;
-    border: 1px solid var(--border);
-    padding: 2px 6px;
-    border-radius: 3px;
-  }
+.search-btn:active { transform: translateY(0); }
+.search-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
 
-  .news-title {
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 1.55;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
+/* scan line animation on button */
+.scan-bar {
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: scanBtn 1.8s ease-in-out infinite;
+  display: none;
+}
 
-  .news-seendates {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.5px;
-  }
+.search-btn.loading .scan-bar { display: block; }
 
-  .news-arrow {
-    color: var(--muted);
-    font-size: 16px;
-    align-self: center;
-    flex-shrink: 0;
-    transition: color 0.2s, transform 0.2s;
-  }
+@keyframes scanBtn {
+  0% { left: -60%; }
+  100% { left: 110%; }
+}
 
-  .news-item:hover .news-arrow {
-    color: var(--accent);
-    transform: translateX(3px);
-  }
+/* ── STATUS ── */
+.status-msg {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
 
-  /* empty / placeholder */
-  .placeholder {
-    text-align: center;
-    padding: 70px 20px;
-  }
+.status-msg.loading {
+  display: flex;
+  background: var(--accent-light);
+  border: 1px solid rgba(14,165,233,0.2);
+  color: var(--accent-dark);
+}
 
-  .placeholder-icon {
-    font-size: 42px;
-    margin-bottom: 14px;
-    opacity: 0.35;
-  }
+.status-msg.error {
+  display: flex;
+  background: var(--red-light);
+  border: 1px solid rgba(239,68,68,0.2);
+  color: var(--red);
+}
 
-  .placeholder-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 2px;
-    color: #2a3a4a;
-    margin-bottom: 8px;
-  }
+.spinner {
+  width: 16px; height: 16px;
+  border: 2.5px solid rgba(14,165,233,0.25);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
 
-  .placeholder-sub {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 1px;
-    line-height: 1.8;
-  }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-  /* pagination */
-  .pagination {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 24px;
-    flex-wrap: wrap;
-  }
+/* ── SUMMARY CARD ── */
+.summary-banner {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid rgba(14,165,233,0.2);
+  border-radius: 18px;
+  padding: 22px 24px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
 
-  .page-btn {
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 12px;
-    padding: 7px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.15s;
-    letter-spacing: 1px;
-  }
+.summary-banner::after {
+  content: '✦';
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 48px;
+  color: rgba(14,165,233,0.08);
+  pointer-events: none;
+}
 
-  .page-btn:hover, .page-btn.active {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(0,255,224,0.07);
-  }
+.summary-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
 
-  .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.summary-text {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text2);
+}
+
+/* ── NEWS RESULTS HEADER ── */
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.results-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.results-count {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  background: var(--green-light);
+  color: var(--green);
+  border: 1px solid rgba(16,185,129,0.25);
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* ── NEWS CARD ── */
+.news-list { display: flex; flex-direction: column; gap: 12px; }
+
+.news-card {
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 22px;
+  transition: all 0.2s;
+  animation: slideUp 0.4s ease both;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.news-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px rgba(14,165,233,0.12);
+  transform: translateY(-2px);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.news-card:nth-child(1) { animation-delay: 0.04s; }
+.news-card:nth-child(2) { animation-delay: 0.08s; }
+.news-card:nth-child(3) { animation-delay: 0.12s; }
+.news-card:nth-child(4) { animation-delay: 0.16s; }
+.news-card:nth-child(5) { animation-delay: 0.20s; }
+.news-card:nth-child(n+6) { animation-delay: 0.24s; }
+
+.news-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.news-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.news-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid;
+}
+
+.news-tag.iot { background: var(--accent-light); color: var(--accent-dark); border-color: rgba(14,165,233,0.25); }
+.news-tag.smart { background: var(--purple-light); color: var(--purple); border-color: rgba(139,92,246,0.25); }
+.news-tag.aiot { background: var(--green-light); color: var(--green); border-color: rgba(16,185,129,0.25); }
+.news-tag.other { background: var(--bg); color: var(--text3); border-color: var(--border); }
+
+.importance-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.imp-high { background: var(--red-light); color: var(--red); }
+.imp-medium { background: var(--orange-light); color: var(--orange); }
+.imp-low { background: var(--bg); color: var(--text3); }
+
+.news-title {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.news-summary {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text2);
+}
+
+.news-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.news-source {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.news-link {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+  transition: opacity 0.15s;
+}
+
+.news-link:hover { opacity: 0.7; }
+
+/* ── EMPTY STATE ── */
+.empty {
+  text-align: center;
+  padding: 64px 20px;
+  color: var(--text3);
+}
+
+.empty-icon { font-size: 44px; margin-bottom: 14px; opacity: 0.6; }
+.empty-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+.empty-desc { font-size: 14px; line-height: 1.7; }
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0 20px;
+}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="page">
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="header-top">
-      <div class="logo-block">
-        <div class="logo-eyebrow">Industry Intelligence · Real-time Feed</div>
-        <h1>IOT <span>&</span> SMART HOME<br>新闻雷达</h1>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="pulse-dot"></span>
+      实时行业情报
+    </div>
+    <h1>IoT & 智能家居<br><em>新闻雷达</em></h1>
+    <p class="hero-sub">输入日期或时间段，一键检索全球 IoT 与智能家居行业动态，由 Claude AI 实时搜索整理。</p>
+  </div>
+
+  <!-- API KEY -->
+  <div class="card">
+    <div class="card-title">API 密钥配置</div>
+    <div class="apikey-row">
+      <div class="apikey-input-wrap">
+        <input type="password" id="apiKey" placeholder="sk-ant-api03-..." oninput="onKeyInput()" />
+        <button class="eye-btn" id="eyeBtn" onclick="toggleEye()">👁</button>
       </div>
-      <div class="source-badge">
-        <div class="gdelt-label">DATA SOURCE</div>
-        <div class="gdelt-tag">GDELT DOC API</div>
-        <div class="free-badge">✓ 完全免费 · 无需 Key</div>
-      </div>
+      <div class="key-status empty" id="keyStatus">未填写</div>
+    </div>
+    <div class="key-hint">
+      前往 <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a> 获取 Key · 仅保存在本地浏览器，不上传
     </div>
   </div>
 
-  <!-- CONTROL PANEL -->
-  <div class="panel">
-    <div class="panel-title">// 检索参数配置</div>
-    <div class="controls">
-      <div class="ctrl-group">
-        <div class="ctrl-label">目标日期</div>
-        <input type="date" id="dateInput" />
-      </div>
-      <div class="ctrl-group">
-        <div class="ctrl-label">关键词筛选</div>
-        <div class="keyword-wrap" id="kwWrap">
-          <label class="kw-chip c1 on"><input type="checkbox" value="IoT" checked><span class="kw-dot"></span>IoT</label>
-          <label class="kw-chip c1 on"><input type="checkbox" value="Internet of Things" checked><span class="kw-dot"></span>物联网</label>
-          <label class="kw-chip c2 on"><input type="checkbox" value="smart home" checked><span class="kw-dot"></span>Smart Home</label>
-          <label class="kw-chip c2 on"><input type="checkbox" value="智能家居" checked><span class="kw-dot"></span>智能家居</label>
-          <label class="kw-chip c3"><input type="checkbox" value="AIoT"><span class="kw-dot"></span>AIoT</label>
-          <label class="kw-chip c3"><input type="checkbox" value="smart device"><span class="kw-dot"></span>Smart Device</label>
-          <label class="kw-chip c4"><input type="checkbox" value="edge computing"><span class="kw-dot"></span>Edge Computing</label>
-          <label class="kw-chip c4"><input type="checkbox" value="Matter protocol"><span class="kw-dot"></span>Matter</label>
+  <!-- DATE / PERIOD -->
+  <div class="card">
+    <div class="card-title">时间范围</div>
+
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="tabSingle" onclick="setMode('single')">指定日期</button>
+      <button class="mode-tab" id="tabRange" onclick="setMode('range')">时间段</button>
+    </div>
+
+    <div id="singleMode">
+      <div class="date-fields single">
+        <div>
+          <div class="field-label">日期</div>
+          <input type="date" id="singleDate" />
         </div>
       </div>
-      <div class="ctrl-group">
-        <div class="ctrl-label">&nbsp;</div>
-        <button class="btn-go" id="goBtn" onclick="search()">SCAN</button>
+    </div>
+
+    <div id="rangeMode" style="display:none">
+      <div class="date-fields range">
+        <div>
+          <div class="field-label">开始日期</div>
+          <input type="date" id="startDate" />
+        </div>
+        <div>
+          <div class="field-label">结束日期</div>
+          <input type="date" id="endDate" />
+        </div>
+      </div>
+      <div class="quick-periods">
+        <span style="font-size:12px;color:var(--text3);align-self:center;margin-right:2px;">快捷：</span>
+        <button class="qp-btn" onclick="setQuickPeriod(7)">近 7 天</button>
+        <button class="qp-btn" onclick="setQuickPeriod(14)">近 14 天</button>
+        <button class="qp-btn" onclick="setQuickPeriod(30)">近 30 天</button>
+        <button class="qp-btn" onclick="setQuickPeriod(90)">近 3 个月</button>
       </div>
     </div>
   </div>
 
+  <!-- TOPICS -->
+  <div class="card">
+    <div class="card-title">关注领域</div>
+    <div class="topics-grid">
+      <label class="topic-chip t1 on"><input type="checkbox" value="IoT" checked><span class="chip-dot"></span>IoT 物联网</label>
+      <label class="topic-chip t2 on"><input type="checkbox" value="智能家居" checked><span class="chip-dot"></span>智能家居</label>
+      <label class="topic-chip t1 on"><input type="checkbox" value="Smart Home" checked><span class="chip-dot"></span>Smart Home</label>
+      <label class="topic-chip t3"><input type="checkbox" value="AIoT"><span class="chip-dot"></span>AIoT</label>
+      <label class="topic-chip t3"><input type="checkbox" value="智能设备"><span class="chip-dot"></span>智能设备</label>
+      <label class="topic-chip t4"><input type="checkbox" value="边缘计算"><span class="chip-dot"></span>边缘计算</label>
+      <label class="topic-chip t4"><input type="checkbox" value="Matter协议"><span class="chip-dot"></span>Matter 协议</label>
+      <label class="topic-chip t2"><input type="checkbox" value="工业物联网"><span class="chip-dot"></span>工业物联网</label>
+    </div>
+  </div>
+
+  <!-- LANGUAGE -->
+  <div class="card">
+    <div class="card-title">语言偏好</div>
+    <div class="lang-row">
+      <button class="lang-btn active" id="lang-zh" onclick="setLang('zh')">🇨🇳 中文优先</button>
+      <button class="lang-btn" id="lang-en" onclick="setLang('en')">🇺🇸 英文优先</button>
+      <button class="lang-btn" id="lang-both" onclick="setLang('both')">🌏 中英双语</button>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <button class="search-btn" id="searchBtn" onclick="doSearch()">
+    <div class="scan-bar"></div>
+    <span id="searchBtnTxt">🔍 开始检索</span>
+  </button>
+
+  <div style="height:24px;"></div>
+
   <!-- STATUS -->
-  <div class="status" id="status">
-    <div class="spin"></div>
-    <span id="statusTxt">正在扫描 GDELT 全球新闻数据库...</span>
+  <div class="status-msg" id="statusMsg">
+    <div class="spinner"></div>
+    <span id="statusTxt"></span>
   </div>
 
   <!-- RESULTS -->
-  <div id="results">
-    <div class="placeholder">
-      <div class="placeholder-icon">📡</div>
-      <div class="placeholder-title">AWAITING SCAN</div>
-      <div class="placeholder-sub">
-        选择日期 · 勾选关键词 · 点击 SCAN<br>
-        直接从 GDELT 全球新闻数据库拉取真实资讯<br>
-        <span style="color:rgba(0,255,224,0.4)">无需 API Key · 完全免费</span>
-      </div>
+  <div id="resultsArea">
+    <div class="empty">
+      <div class="empty-icon">📡</div>
+      <div class="empty-title">等待检索</div>
+      <div class="empty-desc">配置好参数后点击「开始检索」<br>Claude AI 将自动搜索并整理行业资讯</div>
     </div>
   </div>
 
 </div>
 
 <script>
-// ── chip toggle ──
-document.querySelectorAll('.kw-chip').forEach(chip => {
+// ── State ──
+let currentLang = 'zh';
+let currentMode = 'single';
+
+// ── Init ──
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('singleDate').value = today;
+document.getElementById('startDate').value = (() => {
+  const d = new Date(); d.setDate(d.getDate() - 7);
+  return d.toISOString().split('T')[0];
+})();
+document.getElementById('endDate').value = today;
+
+// Load saved key
+const savedKey = localStorage.getItem('claude_iot_key');
+if (savedKey) {
+  document.getElementById('apiKey').value = savedKey;
+  updateKeyStatus(savedKey);
+}
+
+// ── Topic chips ──
+document.querySelectorAll('.topic-chip').forEach(chip => {
   chip.addEventListener('click', () => {
     chip.classList.toggle('on');
     chip.querySelector('input').checked = chip.classList.contains('on');
   });
 });
 
-// default date = today
-document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
-
-let allArticles = [];
-let currentPage = 1;
-const PAGE_SIZE = 20;
-
-function getKeywords() {
-  return [...document.querySelectorAll('.kw-chip.on input')].map(i => i.value);
+// ── API Key ──
+function onKeyInput() {
+  const val = document.getElementById('apiKey').value.trim();
+  if (val) localStorage.setItem('claude_iot_key', val);
+  updateKeyStatus(val);
 }
 
-function buildQuery(keywords) {
-  return keywords.map(k => `"${k}"`).join(' OR ');
+function updateKeyStatus(val) {
+  const el = document.getElementById('keyStatus');
+  if (!val) {
+    el.className = 'key-status empty'; el.textContent = '未填写';
+  } else if (val.startsWith('sk-ant-')) {
+    el.className = 'key-status valid'; el.textContent = '✓ 有效';
+  } else {
+    el.className = 'key-status invalid'; el.textContent = '⚠ 格式有误';
+  }
 }
 
-function setStatus(type, txt) {
-  const el = document.getElementById('status');
-  el.className = 'status ' + type;
+function toggleEye() {
+  const inp = document.getElementById('apiKey');
+  const btn = document.getElementById('eyeBtn');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+// ── Mode ──
+function setMode(m) {
+  currentMode = m;
+  document.getElementById('singleMode').style.display = m === 'single' ? '' : 'none';
+  document.getElementById('rangeMode').style.display = m === 'range' ? '' : 'none';
+  document.getElementById('tabSingle').classList.toggle('active', m === 'single');
+  document.getElementById('tabRange').classList.toggle('active', m === 'range');
+}
+
+function setQuickPeriod(days) {
+  const end = new Date();
+  const start = new Date(); start.setDate(start.getDate() - days);
+  document.getElementById('startDate').value = start.toISOString().split('T')[0];
+  document.getElementById('endDate').value = end.toISOString().split('T')[0];
+}
+
+// ── Language ──
+function setLang(l) {
+  currentLang = l;
+  ['zh','en','both'].forEach(x => {
+    document.getElementById('lang-'+x).classList.toggle('active', x === l);
+  });
+}
+
+// ── Status ──
+function showStatus(type, txt) {
+  const el = document.getElementById('statusMsg');
+  el.className = 'status-msg ' + type;
   document.getElementById('statusTxt').textContent = txt;
 }
-
 function hideStatus() {
-  document.getElementById('status').className = 'status';
+  document.getElementById('statusMsg').className = 'status-msg';
 }
 
-// Compute how many hours ago a date was (for GDELT timespan param)
-function getTimespanHours(dateStr) {
-  const target = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now - target;
-  const diffHours = Math.ceil(diffMs / (1000 * 60 * 60));
-  return diffHours;
-}
-
-// Parse RSS XML into article objects
-function parseRSS(xmlText) {
-  const parser = new DOMParser();
-  const xml = parser.parseFromString(xmlText, 'text/xml');
-  const items = Array.from(xml.querySelectorAll('item'));
-  return items.map(item => {
-    const title = item.querySelector('title')?.textContent || '(无标题)';
-    const link = item.querySelector('link')?.textContent?.trim() ||
-                 item.querySelector('guid')?.textContent?.trim() || '#';
-    const pubDate = item.querySelector('pubDate')?.textContent || '';
-    const description = item.querySelector('description')?.textContent || '';
-    // Extract domain from description or link
-    let domain = '';
-    try { domain = new URL(link).hostname.replace('www.', ''); } catch {}
-    // Parse date
-    let dateStr = '';
-    if (pubDate) {
-      try { dateStr = new Date(pubDate).toLocaleDateString('zh-CN'); } catch {}
-    }
-    return { title, url: link, domain, date: dateStr, description };
-  });
-}
-
-// Filter articles to match target date
-function filterByDate(articles, dateStr) {
-  if (!dateStr) return articles;
-  const target = new Date(dateStr);
-  const targetDate = target.toDateString();
-  // Allow ±1 day tolerance
-  const prev = new Date(target); prev.setDate(prev.getDate() - 1);
-  const next = new Date(target); next.setDate(next.getDate() + 1);
-  return articles.filter(a => {
-    if (!a.date) return true; // keep if no date info
-    // Try to match by checking if the article date string contains the year and month
-    const yr = target.getFullYear().toString();
-    const mo = (target.getMonth() + 1).toString().padStart(2, '0');
-    const dy = target.getDate().toString().padStart(2, '0');
-    return a.date.includes(yr) && (a.date.includes(mo) || a.date.includes(target.getMonth() + 1));
-  });
-}
-
-function renderPage(page) {
-  currentPage = page;
-  const start = (page - 1) * PAGE_SIZE;
-  const slice = allArticles.slice(start, start + PAGE_SIZE);
-  const total = allArticles.length;
-  const totalPages = Math.ceil(total / PAGE_SIZE);
-
-  let html = `
-    <div class="results-meta">
-      <div class="results-label">// 检索结果</div>
-      <div class="results-stat">共 ${total} 条 · 第 ${page}/${totalPages} 页</div>
-    </div>
-    <div class="news-list">`;
-
-  for (const a of slice) {
-    html += `
-      <a class="news-item" href="${a.url}" target="_blank" rel="noopener">
-        <div class="news-main">
-          <div class="news-top">
-            <span class="news-domain">${a.domain || '未知来源'}</span>
-            ${a.date ? `<span class="news-lang">${a.date}</span>` : ''}
-          </div>
-          <div class="news-title">${a.title}</div>
-          ${a.description ? `<div class="news-seendates" style="margin-top:4px;font-family:'Noto Sans SC';font-size:12px;color:#4a6070;line-height:1.5;">${a.description.substring(0,120)}${a.description.length > 120 ? '…' : ''}</div>` : ''}
-        </div>
-        <div class="news-arrow">→</div>
-      </a>`;
-  }
-
-  html += '</div>';
-
-  if (totalPages > 1) {
-    html += '<div class="pagination">';
-    if (page > 1) html += `<button class="page-btn" onclick="renderPage(${page-1})">← 上一页</button>`;
-    for (let p = Math.max(1, page-2); p <= Math.min(totalPages, page+2); p++) {
-      html += `<button class="page-btn ${p===page?'active':''}" onclick="renderPage(${p})">${p}</button>`;
-    }
-    if (page < totalPages) html += `<button class="page-btn" onclick="renderPage(${page+1})">下一页 →</button>`;
-    html += '</div>';
-  }
-
-  document.getElementById('results').innerHTML = html;
-}
-
-async function fetchViaProxy(gdeltUrl) {
-  // Try allorigins proxy to bypass CORS
-  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(gdeltUrl)}`;
-  const resp = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
-  if (!resp.ok) throw new Error(`代理请求失败 HTTP ${resp.status}`);
-  const data = await resp.json();
-  if (!data.contents) throw new Error('代理返回内容为空');
-  return data.contents;
-}
-
-async function search() {
-  const dateVal = document.getElementById('dateInput').value;
-  const keywords = getKeywords();
-
-  if (!dateVal) { alert('请选择日期'); return; }
-  if (keywords.length === 0) { alert('请至少勾选一个关键词'); return; }
-
-  // Check date is within last 3 months (GDELT limit)
-  const targetDate = new Date(dateVal);
-  const now = new Date();
-  const diffDays = (now - targetDate) / (1000 * 60 * 60 * 24);
-  if (diffDays > 90) {
-    document.getElementById('results').innerHTML = `
-      <div class="placeholder">
-        <div class="placeholder-icon">⚠️</div>
-        <div class="placeholder-title">日期超出范围</div>
-        <div class="placeholder-sub">GDELT DOC API 仅支持查询<br><span style="color:rgba(0,255,224,0.6)">最近 3 个月</span>内的新闻</div>
-      </div>`;
-    return;
-  }
-  if (diffDays < 0) {
-    document.getElementById('results').innerHTML = `
-      <div class="placeholder">
-        <div class="placeholder-icon">⚠️</div>
-        <div class="placeholder-title">日期无效</div>
-        <div class="placeholder-sub">请选择今天或过去的日期</div>
-      </div>`;
+// ── Main search ──
+async function doSearch() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey || !apiKey.startsWith('sk-ant-')) {
+    alert('请先填写有效的 Anthropic API Key（以 sk-ant- 开头）');
     return;
   }
 
-  const btn = document.getElementById('goBtn');
+  const topics = [...document.querySelectorAll('.topic-chip.on input')].map(i => i.value);
+  if (topics.length === 0) { alert('请至少选择一个关注领域'); return; }
+
+  // Build date range description
+  let dateDesc = '';
+  if (currentMode === 'single') {
+    const d = document.getElementById('singleDate').value;
+    if (!d) { alert('请选择日期'); return; }
+    dateDesc = d;
+  } else {
+    const s = document.getElementById('startDate').value;
+    const e = document.getElementById('endDate').value;
+    if (!s || !e) { alert('请选择开始和结束日期'); return; }
+    if (s > e) { alert('开始日期不能晚于结束日期'); return; }
+    dateDesc = `${s} 至 ${e}`;
+  }
+
+  const langNote = currentLang === 'zh'
+    ? '请优先返回中文新闻，重要英文资讯也可包含。'
+    : currentLang === 'en'
+    ? '请优先返回英文国际新闻资讯。'
+    : '请同时覆盖中文和英文重要资讯。';
+
+  const topicsStr = topics.join('、');
+
+  const btn = document.getElementById('searchBtn');
   btn.disabled = true;
-  btn.textContent = '...';
-  setStatus('loading', `正在扫描 ${dateVal} 的全球新闻数据...`);
-  document.getElementById('results').innerHTML = '';
-  allArticles = [];
+  btn.classList.add('loading');
+  document.getElementById('searchBtnTxt').textContent = '检索中...';
+  showStatus('loading', `正在检索 ${dateDesc} 的行业情报...`);
+  document.getElementById('resultsArea').innerHTML = '';
 
-  const query = buildQuery(keywords);
+  const prompt = `你是专业的IoT与智能家居行业分析师。请使用网络搜索，查找 ${dateDesc} 期间发布的关于以下主题的行业新闻：${topicsStr}。
 
-  // Use STARTDATETIME/ENDDATETIME for specific date
-  const pad = n => String(n).padStart(2, '0');
-  const d = new Date(dateVal);
-  const start = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}000000`;
-  const end   = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}235959`;
+${langNote}
 
-  // Use RSS format — more reliably parsed than JSON for cross-origin
-  const gdeltUrl = `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(query)}&mode=artlist&maxrecords=250&startdatetime=${start}&enddatetime=${end}&format=rss&sort=DateDesc`;
+请搜索并整理 8-12 条真实、有价值的行业新闻，严格按以下JSON格式返回（只返回JSON，不要任何其他文字、解释或markdown代码块）：
+
+{"summary":"对该时期行业动态的整体概述，2-3句话，指出主要趋势","news":[{"title":"新闻标题","source":"媒体来源名称","date":"发布日期YYYY-MM-DD","tags":["标签1","标签2"],"summary":"新闻摘要2-3句，说明核心内容和意义","url":"原文链接或空字符串","importance":"high"}]}
+
+importance只能是：high（重大行业动态/融资/政策/突破）、medium（一般产品发布/市场数据）、low（参考信息）
+tags从以下选择：IoT、智能家居、AIoT、智能设备、边缘计算、Matter、工业物联网、融资、新产品、政策法规、技术突破、市场数据
+按importance降序排列，确保信息真实来自可靠来源。`;
 
   try {
-    setStatus('loading', '正在通过代理连接 GDELT 数据库...');
-    const raw = await fetchViaProxy(gdeltUrl);
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
 
-    // Check if response looks like an error page
-    if (raw.trim().startsWith('Queries') || raw.trim().startsWith('<html') && raw.includes('error')) {
-      throw new Error('GDELT 返回错误，请稍后重试');
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error?.message || `HTTP ${resp.status}`);
     }
 
-    let articles = [];
+    const data = await resp.json();
 
-    // Try RSS parse first
-    if (raw.includes('<rss') || raw.includes('<channel')) {
-      articles = parseRSS(raw);
-    }
-    // Fallback: try JSON
-    else if (raw.trim().startsWith('{')) {
-      const json = JSON.parse(raw);
-      articles = (json.articles || []).map(a => ({
-        title: a.title || '(无标题)',
-        url: a.url || '#',
-        domain: (() => { try { return new URL(a.url).hostname.replace('www.',''); } catch { return ''; } })(),
-        date: a.seendate ? a.seendate.substring(0,4)+'-'+a.seendate.substring(4,6)+'-'+a.seendate.substring(6,8) : '',
-        description: ''
-      }));
-    } else {
-      throw new Error('无法解析返回数据，GDELT 可能暂时不可用');
-    }
+    // Extract all text blocks
+    let rawText = (data.content || [])
+      .filter(b => b.type === 'text')
+      .map(b => b.text)
+      .join('');
 
-    if (articles.length === 0) {
-      hideStatus();
-      document.getElementById('results').innerHTML = `
-        <div class="placeholder">
-          <div class="placeholder-icon">🔍</div>
-          <div class="placeholder-title">NO RESULTS</div>
-          <div class="placeholder-sub">
-            ${dateVal} 未找到相关新闻<br>
-            可尝试扩大关键词范围或选择其他日期
-          </div>
-        </div>`;
-      return;
-    }
+    // Find JSON
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('返回格式异常，无法解析新闻数据');
+    const parsed = JSON.parse(jsonMatch[0]);
 
-    allArticles = articles;
     hideStatus();
-    renderPage(1);
+    renderResults(parsed, dateDesc);
 
-  } catch (err) {
-    setStatus('error', '请求失败：' + err.message);
-    document.getElementById('results').innerHTML = `
-      <div class="placeholder">
-        <div class="placeholder-icon">📡</div>
-        <div class="placeholder-title">连接失败</div>
-        <div class="placeholder-sub" style="color:#ff5050">${err.message}<br><br><span style="color:#4a6070">请检查网络连接后重试</span></div>
+  } catch (e) {
+    showStatus('error', '检索失败：' + e.message);
+    document.getElementById('resultsArea').innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-title">检索出错</div>
+        <div class="empty-desc">${e.message}<br><br>请检查 API Key 是否有效，或稍后重试</div>
       </div>`;
   } finally {
     btn.disabled = false;
-    btn.textContent = 'SCAN';
+    btn.classList.remove('loading');
+    document.getElementById('searchBtnTxt').textContent = '🔍 开始检索';
   }
 }
 
-document.getElementById('dateInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') search();
-});
+// ── Render ──
+function tagClass(t) {
+  if (['IoT','边缘计算','Matter','工业物联网'].includes(t)) return 'iot';
+  if (['智能家居','Smart Home','AIoT','智能设备'].includes(t)) return 'smart';
+  if (['技术突破','融资','新产品'].includes(t)) return 'aiot';
+  return 'other';
+}
+
+function impClass(imp) {
+  if (imp === 'high') return 'imp-high';
+  if (imp === 'medium') return 'imp-medium';
+  return 'imp-low';
+}
+
+function impLabel(imp) {
+  if (imp === 'high') return '🔴 重要';
+  if (imp === 'medium') return '🟡 一般';
+  return '⚪ 参考';
+}
+
+function renderResults(data, dateDesc) {
+  const news = data.news || [];
+  let html = '';
+
+  // Summary
+  if (data.summary) {
+    html += `
+      <div class="summary-banner">
+        <div class="summary-label">📊 ${dateDesc} · 行情概览</div>
+        <div class="summary-text">${data.summary}</div>
+      </div>`;
+  }
+
+  if (news.length === 0) {
+    html += `
+      <div class="empty">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-title">未找到相关新闻</div>
+        <div class="empty-desc">该时间段内暂无相关资讯<br>可尝试扩大时间范围或调整关键词</div>
+      </div>`;
+    document.getElementById('resultsArea').innerHTML = html;
+    return;
+  }
+
+  html += `
+    <div class="results-header">
+      <div class="results-label">检索结果</div>
+      <div class="results-count">共 ${news.length} 条资讯</div>
+    </div>
+    <div class="news-list">`;
+
+  for (const item of news) {
+    const tags = (item.tags || []).slice(0, 3);
+    const tagsHtml = tags.map(t => `<span class="news-tag ${tagClass(t)}">${t}</span>`).join('');
+    const hasUrl = item.url && item.url.startsWith('http');
+    const cardAttr = hasUrl ? `href="${item.url}" target="_blank" rel="noopener"` : '';
+    const Tag = hasUrl ? 'a' : 'div';
+
+    html += `
+      <${Tag} class="news-card" ${cardAttr}>
+        <div class="news-card-top">
+          <div class="news-tags">${tagsHtml}</div>
+          <span class="importance-badge ${impClass(item.importance)}">${impLabel(item.importance)}</span>
+        </div>
+        <div class="news-title">${item.title || ''}</div>
+        <div class="news-summary">${item.summary || ''}</div>
+        <div class="news-footer">
+          <span class="news-source">${item.source || ''}${item.date ? ' · ' + item.date : ''}</span>
+          ${hasUrl ? `<a class="news-link" href="${item.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">阅读原文 →</a>` : ''}
+        </div>
+      </${Tag}>`;
+  }
+
+  html += '</div>';
+  document.getElementById('resultsArea').innerHTML = html;
+  window.scrollTo({ top: document.getElementById('resultsArea').offsetTop - 20, behavior: 'smooth' });
+}
 </script>
 </body>
 </html>
