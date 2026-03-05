@@ -1,1 +1,1165 @@
 
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产品情报站 · IoT Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,700;1,300;1,600&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #fafaf8;
+  --white: #ffffff;
+  --ink: #1a1a1a;
+  --ink2: #555;
+  --ink3: #999;
+  --line: #e8e8e4;
+  --line2: #f2f2ef;
+  --accent: #1a56db;
+  --accent-soft: #eef3ff;
+  --accent-mid: #c7d7fc;
+  --green: #0b7a4e;
+  --green-soft: #e6f4ee;
+  --amber: #b45309;
+  --amber-soft: #fef3c7;
+  --red: #c0392b;
+  --red-soft: #fdecea;
+  --purple: #6d28d9;
+  --purple-soft: #f0ebff;
+  --teal: #0d7377;
+  --teal-soft: #e0f5f5;
+  --r: 14px;
+}
+
+html { font-size: 15px; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* subtle linen texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='1' height='1' x='0' y='0' fill='%23d4d4d0' opacity='0.4'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+.page {
+  position: relative; z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+/* ── MASTHEAD ── */
+.masthead {
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 16px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.site-name {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.site-name span { color: var(--accent); }
+
+.tagline {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+
+/* ── SEARCH PANEL ── */
+.search-panel {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 22px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.search-label {
+  font-family: 'Fraunces', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+/* main search input */
+.search-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.search-input-wrap {
+  flex: 1;
+  position: relative;
+}
+
+.search-input-wrap input {
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: var(--ink);
+  outline: none;
+  transition: all 0.15s;
+}
+
+.search-input-wrap input::placeholder { color: var(--ink3); font-weight: 400; }
+.search-input-wrap input:focus { border-color: var(--accent); background: var(--white); box-shadow: 0 0 0 3px rgba(26,86,219,0.1); }
+
+.go-btn {
+  background: var(--ink);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 22px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  position: relative;
+  overflow: hidden;
+}
+
+.go-btn:hover:not(:disabled) {
+  background: var(--accent);
+  box-shadow: 0 4px 14px rgba(26,86,219,0.25);
+  transform: translateY(-1px);
+}
+
+.go-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn-spin {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  display: none; flex-shrink: 0;
+}
+
+.go-btn.busy .btn-spin { display: block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* analysis mode selector */
+.mode-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.mode-card {
+  flex: 1;
+  min-width: 140px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--bg);
+}
+
+.mode-card:hover { border-color: var(--accent-mid); background: var(--accent-soft); }
+.mode-card.on { border-color: var(--accent); background: var(--accent-soft); }
+.mode-card input { display: none; }
+
+.mode-icon { font-size: 18px; margin-bottom: 4px; }
+.mode-name { font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.mode-card.on .mode-name { color: var(--accent); }
+.mode-desc { font-size: 11px; color: var(--ink3); line-height: 1.4; }
+
+/* time range (compact) */
+.time-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.time-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  white-space: nowrap;
+}
+
+.time-chips {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.tc {
+  padding: 4px 11px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--ink2);
+  background: var(--white);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.tc:hover { border-color: var(--accent); color: var(--accent); }
+.tc.on { background: var(--accent); border-color: var(--accent); color: white; }
+
+.custom-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+input[type=date] {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--ink);
+  padding: 5px 9px;
+  outline: none;
+  color-scheme: light;
+  transition: border-color 0.15s;
+}
+
+input[type=date]:focus { border-color: var(--accent); }
+
+.range-sep { font-size: 12px; color: var(--ink3); }
+
+/* example queries */
+.examples {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.ex-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--ink3);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ex-chip {
+  padding: 4px 11px;
+  border: 1px dashed var(--line);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--ink2);
+  cursor: pointer;
+  transition: all 0.12s;
+  background: var(--white);
+}
+
+.ex-chip:hover { border-color: var(--accent); color: var(--accent); border-style: solid; }
+
+/* divider */
+.divider { height: 1px; background: var(--line2); margin: 14px 0; }
+
+/* ── STATUS ── */
+.status {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+
+.status.loading { display: flex; background: var(--accent-soft); border: 1px solid var(--accent-mid); color: var(--accent); }
+.status.error { display: flex; background: var(--red-soft); border: 1px solid #f5b7b1; color: var(--red); }
+
+.s-spin { width: 14px; height: 14px; border: 2px solid var(--accent-mid); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+
+/* ── REPORT ── */
+.report { animation: fadeIn 0.4s ease both; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* report header */
+.report-head {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 22px 24px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.report-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.report-eyebrow::before { content: ''; width: 20px; height: 1.5px; background: var(--accent); }
+
+.report-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+
+.report-title em { font-style: italic; color: var(--accent); }
+
+.report-summary {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--ink2);
+  border-left: 3px solid var(--accent-mid);
+  padding-left: 14px;
+  margin-bottom: 16px;
+}
+
+.report-stats {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.stat-item { text-align: left; }
+.stat-num { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: var(--ink); }
+.stat-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--ink3); margin-top: 1px; }
+
+/* ── TIMELINE ── */
+.timeline-section {
+  margin-bottom: 18px;
+}
+
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+.timeline {
+  position: relative;
+  padding-left: 24px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px; top: 8px; bottom: 8px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent), var(--line));
+  border-radius: 2px;
+}
+
+.tl-item {
+  position: relative;
+  margin-bottom: 14px;
+  animation: slideIn 0.35s ease both;
+}
+
+@keyframes slideIn { from{opacity:0;transform:translateX(-6px)} to{opacity:1;transform:translateX(0)} }
+
+.tl-item:nth-child(1){animation-delay:.04s}
+.tl-item:nth-child(2){animation-delay:.08s}
+.tl-item:nth-child(3){animation-delay:.12s}
+.tl-item:nth-child(4){animation-delay:.16s}
+.tl-item:nth-child(5){animation-delay:.20s}
+.tl-item:nth-child(n+6){animation-delay:.23s}
+
+.tl-dot {
+  position: absolute;
+  left: -20px;
+  top: 12px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--white);
+  box-shadow: 0 0 0 1.5px currentColor;
+  flex-shrink: 0;
+}
+
+.tl-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.tl-card:hover { border-color: var(--accent-mid); box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+
+.tl-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 7px;
+  flex-wrap: wrap;
+}
+
+.tl-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--ink3);
+  white-space: nowrap;
+}
+
+.tl-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-family: 'DM Mono', monospace;
+}
+
+.badge-launch { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent-mid); }
+.badge-update { background: var(--green-soft); color: var(--green); border: 1px solid #a7d7bf; }
+.badge-feature { background: var(--teal-soft); color: var(--teal); border: 1px solid #9dd5d6; }
+.badge-software { background: var(--purple-soft); color: var(--purple); border: 1px solid #c4b5fd; }
+.badge-discontinue { background: var(--red-soft); color: var(--red); border: 1px solid #f5b7b1; }
+.badge-partnership { background: var(--amber-soft); color: var(--amber); border: 1px solid #fcd34d; }
+.badge-milestone { background: #fff8e6; color: #92400e; border: 1px solid #fde68a; }
+
+.tl-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+  margin-bottom: 5px;
+}
+
+.tl-body {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink2);
+}
+
+.tl-features {
+  margin-top: 8px;
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.feat-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--line2);
+  color: var(--ink2);
+  border: 1px solid var(--line);
+}
+
+.tl-source {
+  margin-top: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--ink3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tl-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+}
+.tl-link:hover { text-decoration: underline; }
+
+/* color coding by type */
+.tl-item[data-type="launch"] .tl-dot { color: var(--accent); }
+.tl-item[data-type="update"] .tl-dot { color: var(--green); }
+.tl-item[data-type="feature"] .tl-dot { color: var(--teal); }
+.tl-item[data-type="software"] .tl-dot { color: var(--purple); }
+.tl-item[data-type="discontinue"] .tl-dot { color: var(--red); }
+.tl-item[data-type="partnership"] .tl-dot { color: var(--amber); }
+.tl-item[data-type="milestone"] .tl-dot { color: #92400e; }
+
+/* INSIGHTS GRID */
+.insights-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+@media(max-width: 520px) { .insights-grid { grid-template-columns: 1fr; } }
+
+.insight-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.insight-icon { font-size: 20px; margin-bottom: 6px; }
+.insight-title { font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.insight-body { font-size: 12px; line-height: 1.65; color: var(--ink2); }
+
+/* TREND CHART (css-only bar) */
+.trend-section {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+
+.trend-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 14px;
+}
+
+.trend-bars { display: flex; flex-direction: column; gap: 8px; }
+
+.trend-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.trend-year {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--ink2);
+  width: 36px;
+  flex-shrink: 0;
+}
+
+.trend-bar-wrap { flex: 1; height: 8px; background: var(--line2); border-radius: 4px; overflow: hidden; }
+
+.trend-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #60a5fa);
+  border-radius: 4px;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.trend-count {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--ink3);
+  width: 20px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* LEGEND */
+.legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  background: var(--line2);
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--ink2);
+}
+
+.legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── API FOOTER ── */
+.api-footer {
+  margin-top: 32px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+
+.api-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 0;
+}
+
+.api-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+
+.key-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--line); transition: background 0.2s; }
+.key-dot.ok { background: var(--green); }
+.key-dot.warn { background: var(--amber); }
+
+.chevron { font-size: 11px; color: var(--ink3); transition: transform 0.2s; }
+.chevron.open { transform: rotate(180deg); }
+
+.api-body { padding: 14px 0 0; }
+
+.api-row { display: flex; gap: 8px; align-items: center; }
+
+.api-iw { position: relative; flex: 1; }
+.api-iw input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  padding: 9px 36px 9px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.api-iw input:focus { border-color: var(--accent); background: var(--white); }
+
+.eye { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--ink3); font-size: 14px; }
+
+.key-stat { font-family: 'DM Mono', monospace; font-size: 10px; padding: 5px 9px; border-radius: 6px; border: 1px solid; white-space: nowrap; }
+.key-stat.empty { background: var(--line2); border-color: var(--line); color: var(--ink3); }
+.key-stat.ok { background: var(--green-soft); border-color: #a7d7bf; color: var(--green); }
+.key-stat.bad { background: var(--amber-soft); border-color: #fcd34d; color: var(--amber); }
+
+.api-hint { font-size: 11px; color: var(--ink3); margin-top: 7px; line-height: 1.5; }
+.api-hint a { color: var(--accent); text-decoration: none; }
+
+/* EMPTY */
+.empty { text-align: center; padding: 56px 20px; }
+.empty-ico { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+.empty-title { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; color: var(--ink2); margin-bottom: 8px; }
+.empty-desc { font-size: 13px; color: var(--ink3); line-height: 1.8; }
+.empty-examples { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.empty-ex { padding: 6px 14px; border: 1px dashed var(--line); border-radius: 20px; font-size: 12px; color: var(--ink2); cursor: pointer; transition: all 0.12s; }
+.empty-ex:hover { border-color: var(--accent); color: var(--accent); border-style: solid; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="site-name">产品情报站<span>·</span></div>
+    <div class="tagline">IoT Product Intelligence</div>
+  </div>
+
+  <!-- SEARCH PANEL -->
+  <div class="search-panel">
+    <div class="search-label">查询任意产品或技术，生成深度时间线报告</div>
+
+    <div class="search-input-row">
+      <div class="search-input-wrap">
+        <input type="text" id="queryInput"
+          placeholder="例：Google Home、摄像机、Matter协议、小米智能家居…"
+          onkeydown="if(event.key==='Enter')doSearch()" />
+      </div>
+      <button class="go-btn" id="goBtn" onclick="doSearch()">
+        <div class="btn-spin"></div>
+        <span id="goTxt">分析 →</span>
+      </button>
+    </div>
+
+    <!-- Analysis mode -->
+    <div class="mode-row" id="modeRow">
+      <label class="mode-card on" id="mTimeline">
+        <input type="radio" name="mode" value="timeline" checked>
+        <div class="mode-icon">📅</div>
+        <div class="mode-name">产品时间线</div>
+        <div class="mode-desc">发布、升级、迭代历史</div>
+      </label>
+      <label class="mode-card" id="mFeature">
+        <input type="radio" name="mode" value="feature">
+        <div class="mode-icon">🔬</div>
+        <div class="mode-name">功能对比</div>
+        <div class="mode-desc">各代产品功能演进</div>
+      </label>
+      <label class="mode-card" id="mMarket">
+        <input type="radio" name="mode" value="market">
+        <div class="mode-icon">📊</div>
+        <div class="mode-name">市场动态</div>
+        <div class="mode-desc">竞品、融资、行业格局</div>
+      </label>
+      <label class="mode-card" id="mNews">
+        <input type="radio" name="mode" value="news">
+        <div class="mode-icon">📰</div>
+        <div class="mode-name">最新资讯</div>
+        <div class="mode-desc">近期新闻与动态</div>
+      </label>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Time range -->
+    <div class="time-row">
+      <div class="time-label">时间范围</div>
+      <div class="time-chips">
+        <button class="tc" onclick="setTC(this,'1y')">近1年</button>
+        <button class="tc on" onclick="setTC(this,'3y')">近3年</button>
+        <button class="tc" onclick="setTC(this,'5y')">近5年</button>
+        <button class="tc" onclick="setTC(this,'all')">全部历史</button>
+        <button class="tc" onclick="setTC(this,'custom')">自定义</button>
+      </div>
+    </div>
+
+    <div id="customRange" style="display:none;margin-top:10px;">
+      <div class="custom-range">
+        <input type="date" id="d1" />
+        <span class="range-sep">→</span>
+        <input type="date" id="d2" />
+      </div>
+    </div>
+
+    <!-- Example queries -->
+    <div class="examples">
+      <div class="ex-label">试试</div>
+      <span class="ex-chip" onclick="setQuery('Google Home')">Google Home</span>
+      <span class="ex-chip" onclick="setQuery('Nest Camera')">Nest Camera</span>
+      <span class="ex-chip" onclick="setQuery('Matter 协议')">Matter 协议</span>
+      <span class="ex-chip" onclick="setQuery('小米智能家居')">小米智能家居</span>
+      <span class="ex-chip" onclick="setQuery('Amazon Echo')">Amazon Echo</span>
+      <span class="ex-chip" onclick="setQuery('Apple HomeKit')">Apple HomeKit</span>
+    </div>
+  </div>
+
+  <!-- STATUS -->
+  <div class="status" id="status">
+    <div class="s-spin"></div>
+    <span id="statusTxt">正在深度研究，请稍候…</span>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results">
+    <div class="empty">
+      <div class="empty-ico">🔭</div>
+      <div class="empty-title">输入任意产品，生成深度报告</div>
+      <div class="empty-desc">
+        支持智能硬件、软件平台、协议标准、品牌生态等<br>
+        AI 自动搜索并整理成结构化时间线 + 洞察报告
+      </div>
+      <div class="empty-examples">
+        <span class="empty-ex" onclick="setQuery('Google Home')">Google Home 迭代史</span>
+        <span class="empty-ex" onclick="setQuery('智能门锁')">智能门锁发展</span>
+        <span class="empty-ex" onclick="setQuery('Zigbee vs Matter')">Zigbee vs Matter</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- API KEY FOOTER -->
+  <div class="api-footer">
+    <div class="api-toggle" onclick="toggleApi()">
+      <div class="api-toggle-left">
+        <span class="key-dot" id="keyDot"></span>
+        API 密钥配置
+      </div>
+      <span class="chevron" id="chevron">▾</span>
+    </div>
+    <div class="api-body" id="apiBody" style="display:none">
+      <div class="api-row">
+        <div class="api-iw">
+          <input type="password" id="apiKey" placeholder="sk-ant-api03-…" oninput="onKey()" />
+          <button class="eye" id="eyeBtn" onclick="toggleEye()">👁</button>
+        </div>
+        <div class="key-stat empty" id="keyStat">未填写</div>
+      </div>
+      <div class="api-hint">前往 <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a> 获取 · 仅保存在本地浏览器</div>
+    </div>
+  </div>
+
+</div>
+<script>
+// ── init ──
+let timeRange = '3y';
+const today = () => new Date().toISOString().split('T')[0];
+document.getElementById('d1').value = (() => { const d=new Date(); d.setFullYear(d.getFullYear()-1); return d.toISOString().split('T')[0]; })();
+document.getElementById('d2').value = today();
+
+const sk = localStorage.getItem('iot_intel_key');
+if (sk) { document.getElementById('apiKey').value = sk; syncKey(sk); }
+
+// mode cards
+document.querySelectorAll('.mode-card').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('.mode-card').forEach(x => x.classList.remove('on'));
+    c.classList.add('on');
+    c.querySelector('input').checked = true;
+  });
+});
+
+function getMode() {
+  return document.querySelector('.mode-card.on input').value;
+}
+
+// time chips
+function setTC(el, val) {
+  document.querySelectorAll('.tc').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  timeRange = val;
+  document.getElementById('customRange').style.display = val === 'custom' ? '' : 'none';
+}
+
+function getTimeDesc() {
+  const now = new Date();
+  if (timeRange === '1y') { const d = new Date(); d.setFullYear(d.getFullYear()-1); return `${d.getFullYear()}年至今`; }
+  if (timeRange === '3y') { const d = new Date(); d.setFullYear(d.getFullYear()-3); return `${d.getFullYear()}年至今`; }
+  if (timeRange === '5y') { const d = new Date(); d.setFullYear(d.getFullYear()-5); return `${d.getFullYear()}年至今`; }
+  if (timeRange === 'all') return '全部历史时期';
+  if (timeRange === 'custom') {
+    const s = document.getElementById('d1').value, e = document.getElementById('d2').value;
+    return s && e ? `${s} 至 ${e}` : '自定义时间段';
+  }
+  return '近3年';
+}
+
+function setQuery(q) {
+  document.getElementById('queryInput').value = q;
+  document.getElementById('queryInput').focus();
+}
+
+// key
+function onKey() {
+  const v = document.getElementById('apiKey').value.trim();
+  if (v) localStorage.setItem('iot_intel_key', v);
+  syncKey(v);
+}
+
+function syncKey(v) {
+  const s = document.getElementById('keyStat'), d = document.getElementById('keyDot');
+  if (!v) { s.className='key-stat empty'; s.textContent='未填写'; d.className='key-dot'; }
+  else if (v.startsWith('sk-ant-')) { s.className='key-stat ok'; s.textContent='✓ 有效'; d.className='key-dot ok'; }
+  else { s.className='key-stat bad'; s.textContent='格式有误'; d.className='key-dot warn'; }
+}
+
+function toggleEye() {
+  const i = document.getElementById('apiKey'), b = document.getElementById('eyeBtn');
+  i.type = i.type === 'password' ? 'text' : 'password';
+  b.textContent = i.type === 'password' ? '👁' : '🙈';
+}
+
+function toggleApi() {
+  const b = document.getElementById('apiBody'), c = document.getElementById('chevron');
+  const open = b.style.display === 'none';
+  b.style.display = open ? '' : 'none';
+  c.classList.toggle('open', open);
+}
+
+// ── SEARCH ──
+async function doSearch() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey || !apiKey.startsWith('sk-ant-')) {
+    document.getElementById('apiBody').style.display = '';
+    document.getElementById('chevron').classList.add('open');
+    document.getElementById('apiKey').focus();
+    alert('请先在页面底部填写有效的 API Key');
+    return;
+  }
+
+  const query = document.getElementById('queryInput').value.trim();
+  if (!query) { alert('请输入要查询的产品或主题'); document.getElementById('queryInput').focus(); return; }
+
+  const mode = getMode();
+  const timeDesc = getTimeDesc();
+
+  const modePrompts = {
+    timeline: `你是科技产品研究员，擅长整理产品发展历史。请深入搜索并分析"${query}"在${timeDesc}内的完整发展时间线。
+
+重点包括：
+- 每次产品发布/新型号发布（硬件规格、定价、目标市场）
+- 重要软件/固件更新及新功能
+- 生态系统扩展（新兼容设备、平台集成）
+- 重大战略调整或产品线变化
+- 停产/停服公告
+- 市场里程碑（销量、用户数等）`,
+
+    feature: `你是产品功能分析师。请深入搜索"${query}"在${timeDesc}内的功能演进历史。
+
+重点包括：
+- 每代产品/版本的核心功能对比
+- 重大功能新增或移除
+- 软件能力的扩展（AI、自动化、互联互通）
+- 用户体验的重要改进
+- 与竞品的关键差异化`,
+
+    market: `你是IoT行业市场分析师。请深入搜索"${query}"在${timeDesc}内的市场动态。
+
+重点包括：
+- 市场份额与销售数据
+- 融资/收购/战略合作事件
+- 主要竞品的布局变化
+- 价格策略调整
+- 行业标准/政策对其影响
+- 分析师/媒体的重要评价`,
+
+    news: `你是科技资讯编辑。请搜索"${query}"近期（${timeDesc}）的最新新闻动态。
+
+重点包括：
+- 最新产品发布或更新
+- 近期重要公告
+- 用户反馈与评测
+- 技术突破或问题
+- 市场相关新闻`
+  };
+
+  const basePrompt = modePrompts[mode];
+
+  const prompt = `${basePrompt}
+
+请基于真实搜索结果，以JSON格式返回（仅返回JSON，不要任何其他文字或markdown）：
+
+{
+  "subject": "${query}",
+  "mode": "${mode}",
+  "timespan": "${timeDesc}",
+  "overview": "2-4句整体概述，总结该产品/主题的核心发展脉络",
+  "total_events": 数字,
+  "key_insight": "最重要的一条洞察（1句话）",
+  "insights": [
+    {"icon": "emoji", "title": "洞察标题", "body": "2-3句洞察内容"}
+  ],
+  "year_activity": [
+    {"year": "2022", "count": 5}
+  ],
+  "timeline": [
+    {
+      "date": "2023-09",
+      "type": "launch|update|feature|software|discontinue|partnership|milestone",
+      "title": "事件标题",
+      "body": "详细描述，2-4句",
+      "features": ["关键特性1", "关键特性2"],
+      "source": "来源媒体",
+      "url": "链接或空字符串"
+    }
+  ]
+}
+
+type说明: launch=新产品/型号发布, update=重大升级, feature=功能更新, software=软件/固件更新, discontinue=停产停服, partnership=合作/收购, milestone=里程碑
+timeline按时间倒序排列（最新在前），至少包含10条事件，insights至少3条。
+year_activity统计每年事件数量用于可视化。`;
+
+  const btn = document.getElementById('goBtn');
+  btn.disabled = true; btn.classList.add('busy');
+  document.getElementById('goTxt').textContent = '研究中…';
+  document.getElementById('status').className = 'status loading';
+  document.getElementById('statusTxt').textContent = `正在深度研究「${query}」，AI 搜索中…`;
+  document.getElementById('results').innerHTML = '';
+
+  try {
+    const r = await fetch('/api/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, apiKey })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+
+    const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) throw new Error('返回格式异常，请重试');
+    const parsed = JSON.parse(m[0]);
+
+    document.getElementById('status').className = 'status';
+    renderReport(parsed);
+
+  } catch (e) {
+    document.getElementById('status').className = 'status error';
+    document.getElementById('statusTxt').textContent = '研究失败：' + e.message;
+    document.getElementById('results').innerHTML = `<div class="empty"><div class="empty-ico">⚠️</div><div class="empty-title">出错了</div><div class="empty-desc">${e.message}</div></div>`;
+  } finally {
+    btn.disabled = false; btn.classList.remove('busy');
+    document.getElementById('goTxt').textContent = '分析 →';
+  }
+}
+
+// ── RENDER ──
+const typeLabels = {
+  launch: ['badge-launch', '🚀 发布'],
+  update: ['badge-update', '⬆ 升级'],
+  feature: ['badge-feature', '✨ 功能'],
+  software: ['badge-software', '💻 软件'],
+  discontinue: ['badge-discontinue', '🔴 停产'],
+  partnership: ['badge-partnership', '🤝 合作'],
+  milestone: ['badge-milestone', '🏆 里程碑']
+};
+
+function renderReport(d) {
+  const timeline = d.timeline || [];
+  const insights = d.insights || [];
+  const yearActivity = d.year_activity || [];
+
+  let html = '<div class="report">';
+
+  // ── Report header ──
+  html += `<div class="report-head">
+    <div class="report-eyebrow">${d.mode === 'timeline' ? '产品时间线报告' : d.mode === 'feature' ? '功能演进报告' : d.mode === 'market' ? '市场动态报告' : '最新资讯报告'} · ${d.timespan}</div>
+    <div class="report-title"><em>${d.subject}</em> 深度情报</div>
+    <div class="report-summary">${d.overview || ''}</div>
+    <div class="report-stats">
+      <div class="stat-item"><div class="stat-num">${timeline.length}</div><div class="stat-label">时间节点</div></div>
+      <div class="stat-item"><div class="stat-num">${insights.length}</div><div class="stat-label">关键洞察</div></div>
+      ${d.key_insight ? `<div class="stat-item" style="flex:1"><div class="stat-num" style="font-size:1rem;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--ink2)">💡 ${d.key_insight}</div></div>` : ''}
+    </div>
+  </div>`;
+
+  // ── Year activity chart ──
+  if (yearActivity.length > 0) {
+    const maxCount = Math.max(...yearActivity.map(y => y.count), 1);
+    html += `<div class="trend-section">
+      <div class="trend-title">活跃度趋势 · 每年事件数</div>
+      <div class="trend-bars">`;
+    for (const y of yearActivity.sort((a,b) => a.year - b.year)) {
+      const pct = Math.round((y.count / maxCount) * 100);
+      html += `<div class="trend-row">
+        <div class="trend-year">${y.year}</div>
+        <div class="trend-bar-wrap"><div class="trend-bar" style="width:${pct}%"></div></div>
+        <div class="trend-count">${y.count}</div>
+      </div>`;
+    }
+    html += `</div></div>`;
+  }
+
+  // ── Insights grid ──
+  if (insights.length > 0) {
+    html += `<div class="section-title">关键洞察</div><div class="insights-grid">`;
+    for (const ins of insights) {
+      html += `<div class="insight-card">
+        <div class="insight-icon">${ins.icon || '💡'}</div>
+        <div class="insight-title">${ins.title || ''}</div>
+        <div class="insight-body">${ins.body || ''}</div>
+      </div>`;
+    }
+    html += `</div>`;
+  }
+
+  // ── Timeline ──
+  if (timeline.length > 0) {
+    // Legend
+    const usedTypes = [...new Set(timeline.map(t => t.type))];
+    html += `<div class="section-title">时间线</div>`;
+    html += `<div class="legend">`;
+    for (const type of usedTypes) {
+      const [cls, label] = typeLabels[type] || ['badge-update', type];
+      const dotColor = {
+        launch: 'var(--accent)', update: 'var(--green)', feature: 'var(--teal)',
+        software: 'var(--purple)', discontinue: 'var(--red)',
+        partnership: 'var(--amber)', milestone: '#92400e'
+      }[type] || 'var(--ink3)';
+      html += `<div class="legend-item"><div class="legend-dot" style="background:${dotColor}"></div>${label}</div>`;
+    }
+    html += `</div>`;
+
+    html += `<div class="timeline-section"><div class="timeline">`;
+    for (const item of timeline) {
+      const [badgeCls, badgeLabel] = typeLabels[item.type] || ['badge-update', item.type];
+      const dotColor = {
+        launch: 'var(--accent)', update: 'var(--green)', feature: 'var(--teal)',
+        software: 'var(--purple)', discontinue: 'var(--red)',
+        partnership: 'var(--amber)', milestone: '#92400e'
+      }[item.type] || 'var(--ink3)';
+      const hasUrl = item.url && item.url.startsWith('http');
+      const features = (item.features || []).filter(Boolean);
+
+      html += `<div class="tl-item" data-type="${item.type}">
+        <div class="tl-dot" style="color:${dotColor}"></div>
+        <div class="tl-card">
+          <div class="tl-card-top">
+            <div class="tl-date">${item.date || ''}</div>
+            <div class="tl-badges"><span class="badge ${badgeCls}">${badgeLabel}</span></div>
+          </div>
+          <div class="tl-title">${item.title || ''}</div>
+          <div class="tl-body">${item.body || ''}</div>
+          ${features.length ? `<div class="tl-features">${features.map(f=>`<span class="feat-tag">${f}</span>`).join('')}</div>` : ''}
+          <div class="tl-source">
+            ${item.source ? `<span>${item.source}</span>` : ''}
+            ${hasUrl ? `<a class="tl-link" href="${item.url}" target="_blank" rel="noopener">查看原文 →</a>` : ''}
+          </div>
+        </div>
+      </div>`;
+    }
+    html += `</div></div>`;
+  }
+
+  html += '</div>';
+  document.getElementById('results').innerHTML = html;
+
+  // animate bars after render
+  setTimeout(() => {
+    document.querySelectorAll('.trend-bar').forEach(b => {
+      const w = b.style.width;
+      b.style.width = '0%';
+      requestAnimationFrame(() => { setTimeout(() => { b.style.width = w; }, 50); });
+    });
+  }, 100);
+
+  window.scrollTo({ top: document.getElementById('results').offsetTop - 20, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
