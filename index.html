@@ -4,145 +4,252 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>产品情报站 · IoT Intelligence</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>IoT 情报站</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#fafaf8;--white:#fff;--ink:#1a1a1a;--ink2:#555;--ink3:#999;
-  --line:#e8e8e4;--line2:#f2f2ef;
-  --accent:#1a56db;--accent-soft:#eef3ff;--accent-mid:#c7d7fc;
-  --green:#0b7a4e;--green-soft:#e6f4ee;
-  --amber:#b45309;--amber-soft:#fef3c7;
-  --red:#c0392b;--red-soft:#fdecea;
-  --purple:#6d28d9;--purple-soft:#f0ebff;
-  --teal:#0d7377;--teal-soft:#e0f5f5;
-  --r:14px;
+  --bg:#f6f8fc;--white:#fff;--ink:#111827;--ink2:#4b5563;--ink3:#9ca3af;
+  --line:#e5e7eb;--line2:#f3f4f6;
+  --blue:#1d4ed8;--blue-soft:#eff6ff;--blue-mid:#bfdbfe;--blue-dark:#1e40af;
+  --green:#065f46;--green-soft:#ecfdf5;--green-mid:#6ee7b7;
+  --amber:#92400e;--amber-soft:#fffbeb;--amber-mid:#fcd34d;
+  --red:#991b1b;--red-soft:#fef2f2;--red-mid:#fca5a5;
+  --purple:#5b21b6;--purple-soft:#f5f3ff;--purple-mid:#c4b5fd;
+  --teal:#134e4a;--teal-soft:#f0fdfa;--teal-mid:#5eead4;
+  --r:12px;
 }
 html{font-size:15px}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='1' height='1' x='0' y='0' fill='%23d4d4d0' opacity='0.4'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
-.page{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:40px 20px 80px}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
 
-.masthead{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:28px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.site-name{font-family:'Fraunces',serif;font-size:clamp(1.6rem,4vw,2.2rem);font-weight:700;letter-spacing:-0.5px;line-height:1;color:var(--ink)}
-.site-name span{color:var(--accent)}
+/* ── SCAN LINE EFFECT ── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.018) 2px,rgba(0,0,0,0.018) 4px);
+  animation:scanlines 8s linear infinite;
+}
+@keyframes scanlines{0%{background-position:0 0}100%{background-position:0 100px}}
+
+/* ── SCAN SWEEP ── */
+body::after{
+  content:'';position:fixed;left:0;top:-40%;width:100%;height:40%;
+  background:linear-gradient(180deg,transparent 0%,rgba(29,78,216,0.04) 50%,transparent 100%);
+  pointer-events:none;z-index:998;
+  animation:sweep 6s ease-in-out infinite;
+}
+@keyframes sweep{0%{top:-40%}100%{top:140%}}
+
+.page{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:36px 20px 80px}
+
+/* ── MASTHEAD ── */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:14px;margin-bottom:26px;
+  border-bottom:1.5px solid var(--ink);
+  flex-wrap:wrap;gap:8px;
+  position:relative;
+}
+.masthead-left{display:flex;align-items:baseline;gap:10px}
+.site-name{
+  font-family:'Fraunces',serif;font-size:clamp(1.5rem,4vw,2rem);
+  font-weight:700;letter-spacing:-0.5px;color:var(--ink);
+  position:relative;
+}
+/* scan line on title */
+.site-name::after{
+  content:'';position:absolute;left:0;top:0;width:100%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--blue),transparent);
+  animation:titleScan 3s ease-in-out infinite;
+}
+@keyframes titleScan{0%,100%{opacity:0;transform:scaleX(0)}50%{opacity:1;transform:scaleX(1)}}
+.site-name .iot{color:var(--blue)}
+.site-name .dot{color:var(--blue);animation:dotPulse 2s ease-in-out infinite}
+@keyframes dotPulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
 .tagline{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink3)}
 
-.search-panel{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
-.search-label{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--ink);margin-bottom:12px}
-.search-input-row{display:flex;gap:10px;align-items:stretch}
-.search-input-wrap{flex:1;position:relative}
-.search-input-wrap input{width:100%;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);outline:none;transition:all 0.15s}
+/* Xinyu Wu watermark */
+.watermark{
+  font-family:'Fraunces',serif;font-style:italic;
+  font-size:clamp(0.7rem,2vw,0.85rem);
+  color:transparent;
+  -webkit-text-stroke:1px rgba(29,78,216,0.12);
+  letter-spacing:1px;
+  user-select:none;
+  transition:all 0.4s;
+  white-space:nowrap;
+}
+.watermark:hover{color:rgba(29,78,216,0.18);-webkit-text-stroke:1px rgba(29,78,216,0.18)}
+
+/* ── SEARCH PANEL ── */
+.search-panel{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.05),0 4px 12px rgba(0,0,0,0.04)}
+.search-label{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:11px}
+.search-input-row{display:flex;gap:8px;align-items:stretch}
+.search-input-wrap{flex:1}
+.search-input-wrap input{width:100%;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;background:var(--bg);border:1.5px solid var(--line);border-radius:9px;padding:11px 14px;color:var(--ink);outline:none;transition:all 0.15s}
 .search-input-wrap input::placeholder{color:var(--ink3);font-weight:400}
-.search-input-wrap input:focus{border-color:var(--accent);background:var(--white);box-shadow:0 0 0 3px rgba(26,86,219,0.1)}
-.go-btn{background:var(--ink);color:white;border:none;border-radius:10px;padding:12px 22px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap;display:flex;align-items:center;gap:7px;position:relative;overflow:hidden}
-.go-btn:hover:not(:disabled){background:var(--accent);box-shadow:0 4px 14px rgba(26,86,219,0.25);transform:translateY(-1px)}
+.search-input-wrap input:focus{border-color:var(--blue);background:var(--white);box-shadow:0 0 0 3px rgba(29,78,216,0.08)}
+.go-btn{background:var(--ink);color:white;border:none;border-radius:9px;padding:11px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap;display:flex;align-items:center;gap:6px;position:relative;overflow:hidden}
+.go-btn:hover:not(:disabled){background:var(--blue);box-shadow:0 4px 14px rgba(29,78,216,0.3);transform:translateY(-1px)}
 .go-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-.btn-spin{width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none;flex-shrink:0}
+.btn-spin{width:13px;height:13px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none;flex-shrink:0}
 .go-btn.busy .btn-spin{display:block}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.mode-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.mode-card{flex:1;min-width:140px;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;transition:all 0.15s;background:var(--bg)}
-.mode-card:hover{border-color:var(--accent-mid);background:var(--accent-soft)}
-.mode-card.on{border-color:var(--accent);background:var(--accent-soft)}
+/* mode cards */
+.mode-row{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+.mode-card{flex:1;min-width:120px;padding:9px 12px;border:1.5px solid var(--line);border-radius:9px;cursor:pointer;transition:all 0.15s;background:var(--bg)}
+.mode-card:hover{border-color:var(--blue-mid);background:var(--blue-soft)}
+.mode-card.on{border-color:var(--blue);background:var(--blue-soft)}
 .mode-card input{display:none}
-.mode-icon{font-size:18px;margin-bottom:4px}
-.mode-name{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px}
-.mode-card.on .mode-name{color:var(--accent)}
-.mode-desc{font-size:11px;color:var(--ink3);line-height:1.4}
+.mode-icon{font-size:16px;margin-bottom:3px}
+.mode-name{font-size:11.5px;font-weight:600;color:var(--ink);margin-bottom:1px}
+.mode-card.on .mode-name{color:var(--blue)}
+.mode-desc{font-size:10px;color:var(--ink3);line-height:1.4}
 
-.time-row{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+/* NEW mode cards */
+.mode-card.new-mode{border-style:dashed}
+.mode-card.new-mode.on{border-style:solid}
+.new-badge{display:inline-block;font-size:9px;font-weight:700;background:var(--blue);color:white;padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle}
+
+/* time */
+.time-row{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
 .time-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);white-space:nowrap}
-.time-chips{display:flex;gap:5px;flex-wrap:wrap}
-.tc{padding:4px 11px;border:1px solid var(--line);border-radius:20px;font-size:12px;color:var(--ink2);background:var(--white);cursor:pointer;transition:all 0.12s}
-.tc:hover{border-color:var(--accent);color:var(--accent)}
-.tc.on{background:var(--accent);border-color:var(--accent);color:white}
-.custom-range{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-input[type=date]{background:var(--bg);border:1px solid var(--line);border-radius:8px;font-family:'DM Mono',monospace;font-size:12px;color:var(--ink);padding:5px 9px;outline:none;color-scheme:light;transition:border-color 0.15s}
-input[type=date]:focus{border-color:var(--accent)}
-.range-sep{font-size:12px;color:var(--ink3)}
-
-.examples{margin-top:14px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.time-chips{display:flex;gap:4px;flex-wrap:wrap}
+.tc{padding:4px 10px;border:1px solid var(--line);border-radius:20px;font-size:11.5px;color:var(--ink2);background:var(--white);cursor:pointer;transition:all 0.12s}
+.tc:hover{border-color:var(--blue);color:var(--blue)}
+.tc.on{background:var(--blue);border-color:var(--blue);color:white}
+.custom-range{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+input[type=date]{background:var(--bg);border:1px solid var(--line);border-radius:7px;font-family:'DM Mono',monospace;font-size:11.5px;color:var(--ink);padding:5px 8px;outline:none;color-scheme:light;transition:border-color 0.15s}
+input[type=date]:focus{border-color:var(--blue)}
+.range-sep{font-size:11px;color:var(--ink3)}
+.examples{margin-top:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .ex-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--ink3);text-transform:uppercase;white-space:nowrap}
-.ex-chip{padding:4px 11px;border:1px dashed var(--line);border-radius:20px;font-size:12px;color:var(--ink2);cursor:pointer;transition:all 0.12s;background:var(--white)}
-.ex-chip:hover{border-color:var(--accent);color:var(--accent);border-style:solid}
+.ex-chip{padding:3px 10px;border:1px dashed var(--line);border-radius:20px;font-size:11.5px;color:var(--ink2);cursor:pointer;transition:all 0.12s;background:var(--white)}
+.ex-chip:hover{border-color:var(--blue);color:var(--blue);border-style:solid}
+.divider{height:1px;background:var(--line2);margin:12px 0}
 
-.divider{height:1px;background:var(--line2);margin:14px 0}
+/* status */
+.status{display:none;align-items:center;gap:10px;padding:11px 15px;border-radius:9px;font-size:13px;margin-bottom:16px}
+.status.loading{display:flex;background:var(--blue-soft);border:1px solid var(--blue-mid);color:var(--blue-dark)}
+.status.error{display:flex;background:var(--red-soft);border:1px solid var(--red-mid);color:var(--red)}
+.s-spin{width:13px;height:13px;border:2px solid var(--blue-mid);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
 
-.status{display:none;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:18px}
-.status.loading{display:flex;background:var(--accent-soft);border:1px solid var(--accent-mid);color:var(--accent)}
-.status.error{display:flex;background:var(--red-soft);border:1px solid #f5b7b1;color:var(--red)}
-.s-spin{width:14px;height:14px;border:2px solid var(--accent-mid);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
-
+/* ── REPORT ── */
 .report{animation:fadeIn 0.4s ease both}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 
-.report-head{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.03)}
-.report-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.report-eyebrow::before{content:'';width:20px;height:1.5px;background:var(--accent)}
-.report-title{font-family:'Fraunces',serif;font-size:clamp(1.3rem,3vw,1.9rem);font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:10px}
-.report-title em{font-style:italic;color:var(--accent)}
-.report-summary{font-size:14px;line-height:1.8;color:var(--ink2);border-left:3px solid var(--accent-mid);padding-left:14px;margin-bottom:16px}
-.report-stats{display:flex;gap:18px;flex-wrap:wrap}
-.stat-item{text-align:left}
-.stat-num{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--ink)}
-.stat-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin-top:1px}
+/* KEY INSIGHT CARD (new big card at top) */
+.key-insight-card{
+  background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 60%,#2563eb 100%);
+  border-radius:var(--r);padding:22px 24px;margin-bottom:16px;
+  color:white;position:relative;overflow:hidden;
+}
+.key-insight-card::before{
+  content:'';position:absolute;top:-30%;right:-10%;width:200px;height:200px;
+  border-radius:50%;background:rgba(255,255,255,0.05);
+}
+.key-insight-card::after{
+  content:'';position:absolute;bottom:-20%;left:20%;width:150px;height:150px;
+  border-radius:50%;background:rgba(255,255,255,0.04);
+}
+.ki-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.ki-eyebrow::before{content:'';width:16px;height:1.5px;background:rgba(255,255,255,0.4)}
+.ki-subject{font-family:'Fraunces',serif;font-size:clamp(1.2rem,3vw,1.7rem);font-weight:700;font-style:italic;color:white;line-height:1.2;margin-bottom:12px}
+.ki-text{font-size:14px;line-height:1.8;color:rgba(255,255,255,0.88);position:relative;z-index:1}
+.ki-meta{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap;position:relative;z-index:1}
+.ki-stat{display:flex;flex-direction:column}
+.ki-num{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;color:white;line-height:1}
+.ki-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-top:2px}
+.ki-source{margin-top:10px;font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,0.45);position:relative;z-index:1}
+.ki-source a{color:rgba(255,255,255,0.55);text-decoration:none}
+.ki-source a:hover{color:rgba(255,255,255,0.8);text-decoration:underline}
 
-.section-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+/* report head (compact, below key insight) */
+.report-head{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.report-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:6px;display:flex;align-items:center;gap:7px}
+.report-eyebrow::before{content:'';width:16px;height:1.5px;background:var(--blue)}
+.report-overview{font-size:13.5px;line-height:1.8;color:var(--ink2);border-left:3px solid var(--blue-mid);padding-left:12px}
+
+/* section titles */
+.section-title{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;color:var(--ink);margin-bottom:11px;display:flex;align-items:center;gap:8px}
 .section-title::after{content:'';flex:1;height:1px;background:var(--line)}
 
-.insights-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+/* insights grid */
+.insights-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 @media(max-width:520px){.insights-grid{grid-template-columns:1fr}}
-.insight-card{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
-.insight-icon{font-size:20px;margin-bottom:6px}
-.insight-title{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:4px}
-.insight-body{font-size:12px;line-height:1.65;color:var(--ink2)}
+.insight-card{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:13px 15px;transition:border-color 0.15s,box-shadow 0.15s}
+.insight-card:hover{border-color:var(--blue-mid);box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.insight-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:5px}
+.insight-icon{font-size:18px}
+.insight-title{font-size:12px;font-weight:600;color:var(--ink);flex:1}
+.insight-body{font-size:12px;line-height:1.65;color:var(--ink2);margin-bottom:6px}
+.insight-src{font-family:'DM Mono',monospace;font-size:10px}
+.insight-src a{color:var(--blue);text-decoration:none}
+.insight-src a:hover{text-decoration:underline}
 
-.trend-section{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:18px}
-.trend-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:14px}
-.trend-bars{display:flex;flex-direction:column;gap:8px}
-.trend-row{display:flex;align-items:center;gap:10px}
-.trend-year{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink2);width:36px;flex-shrink:0}
-.trend-bar-wrap{flex:1;height:8px;background:var(--line2);border-radius:4px;overflow:hidden}
-.trend-bar{height:100%;background:linear-gradient(90deg,var(--accent),#60a5fa);border-radius:4px;transition:width 1s cubic-bezier(0.16,1,0.3,1)}
-.trend-count{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink3);width:20px;text-align:right;flex-shrink:0}
+/* trend chart */
+.trend-section{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+.trend-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:12px}
+.trend-bars{display:flex;flex-direction:column;gap:7px}
+.trend-row{display:flex;align-items:center;gap:9px}
+.trend-year{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink2);width:34px;flex-shrink:0}
+.trend-bar-wrap{flex:1;height:7px;background:var(--line2);border-radius:4px;overflow:hidden}
+.trend-bar{height:100%;background:linear-gradient(90deg,var(--blue),#60a5fa);border-radius:4px;transition:width 1s cubic-bezier(0.16,1,0.3,1)}
+.trend-count{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink3);width:18px;text-align:right;flex-shrink:0}
 
-.legend{display:flex;gap:12px;flex-wrap:wrap;padding:12px 16px;background:var(--line2);border-radius:8px;margin-bottom:14px}
-.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink2)}
-.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+/* competitive landscape (new) */
+.comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:16px}
+.comp-card{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:13px 14px}
+.comp-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.comp-pos{font-size:11px;color:var(--ink2);margin-bottom:6px;line-height:1.5}
+.comp-bar-wrap{height:4px;background:var(--line2);border-radius:2px;overflow:hidden}
+.comp-bar{height:100%;border-radius:2px;transition:width 1s cubic-bezier(0.16,1,0.3,1)}
 
-.timeline-section{margin-bottom:18px}
-.timeline{position:relative;padding-left:24px}
-.timeline::before{content:'';position:absolute;left:7px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--accent),var(--line));border-radius:2px}
-.tl-item{position:relative;margin-bottom:14px;animation:slideIn 0.35s ease both}
-@keyframes slideIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
-.tl-item:nth-child(1){animation-delay:.04s}.tl-item:nth-child(2){animation-delay:.08s}
-.tl-item:nth-child(3){animation-delay:.12s}.tl-item:nth-child(4){animation-delay:.16s}
-.tl-item:nth-child(5){animation-delay:.20s}.tl-item:nth-child(n+6){animation-delay:.23s}
-.tl-dot{position:absolute;left:-20px;top:12px;width:10px;height:10px;border-radius:50%;border:2px solid var(--white);box-shadow:0 0 0 1.5px currentColor;flex-shrink:0}
-.tl-card{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:14px 16px;transition:box-shadow 0.15s,border-color 0.15s}
-.tl-card:hover{border-color:var(--accent-mid);box-shadow:0 2px 10px rgba(0,0,0,0.06)}
-.tl-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:7px;flex-wrap:wrap}
-.tl-date{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink3);white-space:nowrap}
-.tl-badges{display:flex;gap:5px;flex-wrap:wrap}
-.badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;white-space:nowrap;font-family:'DM Mono',monospace}
-.badge-launch{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-mid)}
-.badge-update{background:var(--green-soft);color:var(--green);border:1px solid #a7d7bf}
-.badge-feature{background:var(--teal-soft);color:var(--teal);border:1px solid #9dd5d6}
-.badge-software{background:var(--purple-soft);color:var(--purple);border:1px solid #c4b5fd}
-.badge-discontinue{background:var(--red-soft);color:var(--red);border:1px solid #f5b7b1}
-.badge-partnership{background:var(--amber-soft);color:var(--amber);border:1px solid #fcd34d}
+/* signal tags (new) */
+.signals-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.signal-tag{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid}
+.signal-up{background:#f0fdf4;color:#166534;border-color:#bbf7d0}
+.signal-down{background:#fef2f2;color:#991b1b;border-color:#fecaca}
+.signal-hot{background:#fffbeb;color:#92400e;border-color:#fde68a}
+.signal-watch{background:#f5f3ff;color:#5b21b6;border-color:#ddd6fe}
+
+/* legend */
+.legend{display:flex;gap:10px;flex-wrap:wrap;padding:10px 14px;background:var(--line2);border-radius:8px;margin-bottom:12px}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--ink2)}
+.legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* timeline */
+.timeline-section{margin-bottom:16px}
+.timeline{position:relative;padding-left:22px}
+.timeline::before{content:'';position:absolute;left:6px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--blue),var(--line));border-radius:2px}
+.tl-item{position:relative;margin-bottom:12px;animation:slideIn 0.3s ease both}
+@keyframes slideIn{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:translateX(0)}}
+.tl-item:nth-child(1){animation-delay:.03s}.tl-item:nth-child(2){animation-delay:.06s}
+.tl-item:nth-child(3){animation-delay:.09s}.tl-item:nth-child(4){animation-delay:.12s}
+.tl-item:nth-child(5){animation-delay:.15s}.tl-item:nth-child(n+6){animation-delay:.18s}
+.tl-dot{position:absolute;left:-18px;top:11px;width:9px;height:9px;border-radius:50%;border:2px solid var(--white);box-shadow:0 0 0 1.5px currentColor}
+.tl-card{background:var(--white);border:1px solid var(--line);border-radius:9px;padding:12px 14px;transition:box-shadow 0.15s,border-color 0.15s}
+.tl-card:hover{border-color:var(--blue-mid);box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.tl-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:7px;margin-bottom:6px;flex-wrap:wrap}
+.tl-date{font-family:'DM Mono',monospace;font-size:10.5px;color:var(--ink3);white-space:nowrap}
+.tl-badges{display:flex;gap:4px;flex-wrap:wrap}
+.badge{font-size:9.5px;font-weight:600;padding:2px 6px;border-radius:4px;white-space:nowrap;font-family:'DM Mono',monospace}
+.badge-launch{background:var(--blue-soft);color:var(--blue);border:1px solid var(--blue-mid)}
+.badge-update{background:var(--green-soft);color:var(--green);border:1px solid var(--green-mid)}
+.badge-feature{background:var(--teal-soft);color:var(--teal);border:1px solid var(--teal-mid)}
+.badge-software{background:var(--purple-soft);color:var(--purple);border:1px solid var(--purple-mid)}
+.badge-discontinue{background:var(--red-soft);color:var(--red);border:1px solid var(--red-mid)}
+.badge-partnership{background:var(--amber-soft);color:var(--amber);border:1px solid var(--amber-mid)}
 .badge-milestone{background:#fff8e6;color:#92400e;border:1px solid #fde68a}
-.tl-title{font-size:14px;font-weight:600;color:var(--ink);line-height:1.4;margin-bottom:5px}
-.tl-body{font-size:13px;line-height:1.7;color:var(--ink2)}
-.tl-features{margin-top:8px;display:flex;gap:5px;flex-wrap:wrap}
-.feat-tag{font-size:11px;padding:2px 8px;border-radius:4px;background:var(--line2);color:var(--ink2);border:1px solid var(--line)}
-.tl-source{margin-top:8px;font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);display:flex;align-items:center;gap:6px}
-.tl-link{color:var(--accent);text-decoration:none;font-size:10px;font-family:'DM Mono',monospace}
+.tl-title{font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.4;margin-bottom:4px}
+.tl-body{font-size:12.5px;line-height:1.7;color:var(--ink2)}
+.tl-features{margin-top:7px;display:flex;gap:4px;flex-wrap:wrap}
+.feat-tag{font-size:10.5px;padding:2px 7px;border-radius:4px;background:var(--line2);color:var(--ink2);border:1px solid var(--line)}
+.tl-source{margin-top:7px;font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tl-link{color:var(--blue);text-decoration:none;font-size:10px;font-family:'DM Mono',monospace}
 .tl-link:hover{text-decoration:underline}
-.tl-item[data-type=launch] .tl-dot{color:var(--accent)}
+.tl-item[data-type=launch] .tl-dot{color:var(--blue)}
 .tl-item[data-type=update] .tl-dot{color:var(--green)}
 .tl-item[data-type=feature] .tl-dot{color:var(--teal)}
 .tl-item[data-type=software] .tl-dot{color:var(--purple)}
@@ -150,48 +257,55 @@ input[type=date]:focus{border-color:var(--accent)}
 .tl-item[data-type=partnership] .tl-dot{color:var(--amber)}
 .tl-item[data-type=milestone] .tl-dot{color:#92400e}
 
-.api-footer{margin-top:32px;border-top:1px solid var(--line);padding-top:16px}
-.api-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:4px 0}
-.api-toggle-left{display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink3)}
-.key-dot{width:7px;height:7px;border-radius:50%;background:var(--line);transition:background 0.2s}
-.key-dot.ok{background:var(--green)}.key-dot.warn{background:var(--amber)}
+/* API footer */
+.api-footer{margin-top:28px;border-top:1px solid var(--line);padding-top:14px}
+.api-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:3px 0}
+.api-toggle-left{display:flex;align-items:center;gap:7px;font-family:'DM Mono',monospace;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--ink3)}
+.key-dot{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background 0.2s}
+.key-dot.ok{background:#10b981}.key-dot.warn{background:#f59e0b}
 .chevron{font-size:11px;color:var(--ink3);transition:transform 0.2s}
 .chevron.open{transform:rotate(180deg)}
-.api-body{padding:14px 0 0}
-.api-row{display:flex;gap:8px;align-items:center}
+.api-body{padding:12px 0 0}
+.api-row{display:flex;gap:7px;align-items:center}
 .api-iw{position:relative;flex:1}
-.api-iw input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-family:'DM Mono',monospace;font-size:12px;padding:9px 36px 9px 12px;outline:none;transition:border-color 0.15s}
-.api-iw input:focus{border-color:var(--accent);background:var(--white)}
-.eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink3);font-size:14px}
-.key-stat{font-family:'DM Mono',monospace;font-size:10px;padding:5px 9px;border-radius:6px;border:1px solid;white-space:nowrap}
+.api-iw input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:7px;color:var(--ink);font-family:'DM Mono',monospace;font-size:11.5px;padding:8px 34px 8px 11px;outline:none;transition:border-color 0.15s}
+.api-iw input:focus{border-color:var(--blue);background:var(--white)}
+.eye{position:absolute;right:9px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink3);font-size:13px}
+.key-stat{font-family:'DM Mono',monospace;font-size:10px;padding:4px 8px;border-radius:5px;border:1px solid;white-space:nowrap}
 .key-stat.empty{background:var(--line2);border-color:var(--line);color:var(--ink3)}
-.key-stat.ok{background:var(--green-soft);border-color:#a7d7bf;color:var(--green)}
-.key-stat.bad{background:var(--amber-soft);border-color:#fcd34d;color:var(--amber)}
-.api-hint{font-size:11px;color:var(--ink3);margin-top:7px;line-height:1.5}
-.api-hint a{color:var(--accent);text-decoration:none}
+.key-stat.ok{background:#ecfdf5;border-color:#6ee7b7;color:#065f46}
+.key-stat.bad{background:#fffbeb;border-color:#fcd34d;color:#92400e}
+.api-hint{font-size:11px;color:var(--ink3);margin-top:6px;line-height:1.5}
+.api-hint a{color:var(--blue);text-decoration:none}
 
-.empty{text-align:center;padding:56px 20px}
-.empty-ico{font-size:40px;margin-bottom:12px;opacity:0.4}
-.empty-title{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:600;color:var(--ink2);margin-bottom:8px}
+/* empty */
+.empty{text-align:center;padding:50px 20px}
+.empty-ico{font-size:36px;margin-bottom:10px;opacity:0.4}
+.empty-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;color:var(--ink2);margin-bottom:7px}
 .empty-desc{font-size:13px;color:var(--ink3);line-height:1.8}
-.empty-examples{margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.empty-ex{padding:6px 14px;border:1px dashed var(--line);border-radius:20px;font-size:12px;color:var(--ink2);cursor:pointer;transition:all 0.12s}
-.empty-ex:hover{border-color:var(--accent);color:var(--accent);border-style:solid}
+.empty-examples{margin-top:14px;display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.empty-ex{padding:5px 13px;border:1px dashed var(--line);border-radius:20px;font-size:12px;color:var(--ink2);cursor:pointer;transition:all 0.12s}
+.empty-ex:hover{border-color:var(--blue);color:var(--blue);border-style:solid}
 </style>
 </head>
 <body>
 <div class="page">
 
+  <!-- MASTHEAD -->
   <div class="masthead">
-    <div class="site-name">产品情报站<span>·</span></div>
-    <div class="tagline">IoT Product Intelligence</div>
+    <div class="masthead-left">
+      <div class="site-name"><span class="iot">IoT</span> 情报站<span class="dot">·</span></div>
+      <div class="tagline">Intelligence Terminal</div>
+    </div>
+    <div class="watermark">Xinyu Wu</div>
   </div>
 
+  <!-- SEARCH PANEL -->
   <div class="search-panel">
-    <div class="search-label">查询任意产品或技术，生成深度时间线报告</div>
+    <div class="search-label">输入任意产品、品牌或技术，生成深度情报报告</div>
     <div class="search-input-row">
       <div class="search-input-wrap">
-        <input type="text" id="queryInput" placeholder="例：Google Home、摄像机、Matter协议、小米智能家居…" onkeydown="if(event.key==='Enter')doSearch()" />
+        <input type="text" id="queryInput" placeholder="Google Home · 摄像机 · Matter协议 · 小米生态 · Zigbee…" onkeydown="if(event.key==='Enter')doSearch()" />
       </div>
       <button class="go-btn" id="goBtn" onclick="doSearch()">
         <div class="btn-spin"></div>
@@ -199,35 +313,49 @@ input[type=date]:focus{border-color:var(--accent)}
       </button>
     </div>
 
+    <!-- Analysis modes -->
     <div class="mode-row">
       <label class="mode-card on">
         <input type="radio" name="mode" value="timeline" checked>
         <div class="mode-icon">📅</div>
         <div class="mode-name">产品时间线</div>
-        <div class="mode-desc">发布、升级、迭代历史</div>
+        <div class="mode-desc">发布、升级、迭代史</div>
       </label>
       <label class="mode-card">
         <input type="radio" name="mode" value="feature">
         <div class="mode-icon">🔬</div>
-        <div class="mode-name">功能对比</div>
-        <div class="mode-desc">各代产品功能演进</div>
+        <div class="mode-name">功能演进</div>
+        <div class="mode-desc">各代功能对比</div>
       </label>
       <label class="mode-card">
         <input type="radio" name="mode" value="market">
         <div class="mode-icon">📊</div>
         <div class="mode-name">市场动态</div>
-        <div class="mode-desc">竞品、融资、行业格局</div>
+        <div class="mode-desc">竞品、融资、格局</div>
+      </label>
+      <label class="mode-card new-mode">
+        <input type="radio" name="mode" value="competitive">
+        <div class="mode-icon">⚔️</div>
+        <div class="mode-name">竞争格局<span class="new-badge">NEW</span></div>
+        <div class="mode-desc">主要玩家对比</div>
+      </label>
+      <label class="mode-card new-mode">
+        <input type="radio" name="mode" value="signal">
+        <div class="mode-icon">📡</div>
+        <div class="mode-name">行业信号<span class="new-badge">NEW</span></div>
+        <div class="mode-desc">趋势预判与风险</div>
       </label>
       <label class="mode-card">
         <input type="radio" name="mode" value="news">
         <div class="mode-icon">📰</div>
         <div class="mode-name">最新资讯</div>
-        <div class="mode-desc">近期新闻与动态</div>
+        <div class="mode-desc">近期新闻动态</div>
       </label>
     </div>
 
     <div class="divider"></div>
 
+    <!-- Time range -->
     <div class="time-row">
       <div class="time-label">时间范围</div>
       <div class="time-chips">
@@ -238,46 +366,50 @@ input[type=date]:focus{border-color:var(--accent)}
         <button class="tc" onclick="setTC(this,'custom')">自定义</button>
       </div>
     </div>
-    <div id="customRange" style="display:none;margin-top:10px">
+    <div id="customRange" style="display:none;margin-top:9px">
       <div class="custom-range">
-        <input type="date" id="d1"/>
-        <span class="range-sep">→</span>
-        <input type="date" id="d2"/>
+        <input type="date" id="d1"/><span class="range-sep">→</span><input type="date" id="d2"/>
       </div>
     </div>
 
+    <!-- Examples -->
     <div class="examples">
-      <div class="ex-label">试试</div>
+      <div class="ex-label">热门</div>
       <span class="ex-chip" onclick="setQ('Google Home')">Google Home</span>
       <span class="ex-chip" onclick="setQ('Nest Camera')">Nest Camera</span>
       <span class="ex-chip" onclick="setQ('Matter 协议')">Matter 协议</span>
       <span class="ex-chip" onclick="setQ('小米智能家居')">小米智能家居</span>
       <span class="ex-chip" onclick="setQ('Amazon Echo')">Amazon Echo</span>
       <span class="ex-chip" onclick="setQ('Apple HomeKit')">Apple HomeKit</span>
+      <span class="ex-chip" onclick="setQ('智能门锁')">智能门锁</span>
+      <span class="ex-chip" onclick="setQ('Thread协议')">Thread协议</span>
     </div>
   </div>
 
+  <!-- STATUS -->
   <div class="status" id="status">
     <div class="s-spin"></div>
     <span id="statusTxt"></span>
   </div>
 
+  <!-- RESULTS -->
   <div id="results">
     <div class="empty">
-      <div class="empty-ico">🔭</div>
-      <div class="empty-title">输入任意产品，生成深度报告</div>
-      <div class="empty-desc">支持智能硬件、软件平台、协议标准、品牌生态等<br>AI 自动搜索并整理成结构化时间线 + 洞察报告</div>
+      <div class="empty-ico">📡</div>
+      <div class="empty-title">IoT 情报终端就绪</div>
+      <div class="empty-desc">输入任意产品或技术，AI 实时搜索并生成<br>深度时间线 · 竞争格局 · 行业信号报告</div>
       <div class="empty-examples">
-        <span class="empty-ex" onclick="setQ('Google Home')">Google Home 迭代史</span>
-        <span class="empty-ex" onclick="setQ('智能门锁')">智能门锁发展</span>
-        <span class="empty-ex" onclick="setQ('Zigbee vs Matter')">Zigbee vs Matter</span>
+        <span class="empty-ex" onclick="setQ('Google Home')">Google Home 全史</span>
+        <span class="empty-ex" onclick="setQ('Matter 协议')">Matter 协议进展</span>
+        <span class="empty-ex" onclick="setQ('智能家居竞争格局')">智能家居格局</span>
       </div>
     </div>
   </div>
 
+  <!-- API FOOTER -->
   <div class="api-footer">
     <div class="api-toggle" onclick="toggleApi()">
-      <div class="api-toggle-left"><span class="key-dot" id="keyDot"></span>API 密钥配置</div>
+      <div class="api-toggle-left"><span class="key-dot" id="keyDot"></span>API 密钥</div>
       <span class="chevron" id="chevron">▾</span>
     </div>
     <div class="api-body" id="apiBody" style="display:none">
@@ -298,26 +430,21 @@ let timeRange='3y';
 const today=()=>new Date().toISOString().split('T')[0];
 document.getElementById('d1').value=(()=>{const d=new Date();d.setFullYear(d.getFullYear()-1);return d.toISOString().split('T')[0]})();
 document.getElementById('d2').value=today();
-
 const sk=localStorage.getItem('iot_intel_key');
 if(sk){document.getElementById('apiKey').value=sk;syncKey(sk);}
 
 document.querySelectorAll('.mode-card').forEach(c=>{
   c.addEventListener('click',()=>{
     document.querySelectorAll('.mode-card').forEach(x=>x.classList.remove('on'));
-    c.classList.add('on');
-    c.querySelector('input').checked=true;
+    c.classList.add('on'); c.querySelector('input').checked=true;
   });
 });
-
 function getMode(){return document.querySelector('.mode-card.on input').value;}
-
 function setTC(el,val){
   document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
   el.classList.add('on'); timeRange=val;
   document.getElementById('customRange').style.display=val==='custom'?'':'none';
 }
-
 function getTimeDesc(){
   if(timeRange==='1y'){const d=new Date();d.setFullYear(d.getFullYear()-1);return d.getFullYear()+'年至今';}
   if(timeRange==='3y'){const d=new Date();d.setFullYear(d.getFullYear()-3);return d.getFullYear()+'年至今';}
@@ -326,200 +453,182 @@ function getTimeDesc(){
   const s=document.getElementById('d1').value,e=document.getElementById('d2').value;
   return s&&e?s+' 至 '+e:'自定义时间段';
 }
-
 function setQ(q){document.getElementById('queryInput').value=q;document.getElementById('queryInput').focus();}
-
-function onKey(){
-  const v=document.getElementById('apiKey').value.trim();
-  if(v)localStorage.setItem('iot_intel_key',v);
-  syncKey(v);
-}
+function onKey(){const v=document.getElementById('apiKey').value.trim();if(v)localStorage.setItem('iot_intel_key',v);syncKey(v);}
 function syncKey(v){
   const s=document.getElementById('keyStat'),d=document.getElementById('keyDot');
   if(!v){s.className='key-stat empty';s.textContent='未填写';d.className='key-dot';}
   else if(v.startsWith('sk-ant-')){s.className='key-stat ok';s.textContent='✓ 有效';d.className='key-dot ok';}
   else{s.className='key-stat bad';s.textContent='格式有误';d.className='key-dot warn';}
 }
-function toggleEye(){
-  const i=document.getElementById('apiKey'),b=document.getElementById('eyeBtn');
-  i.type=i.type==='password'?'text':'password';
-  b.textContent=i.type==='password'?'👁':'🙈';
-}
-function toggleApi(){
-  const b=document.getElementById('apiBody'),c=document.getElementById('chevron');
-  const open=b.style.display==='none';
-  b.style.display=open?'':'none';
-  c.classList.toggle('open',open);
-}
+function toggleEye(){const i=document.getElementById('apiKey'),b=document.getElementById('eyeBtn');i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'👁':'🙈';}
+function toggleApi(){const b=document.getElementById('apiBody'),c=document.getElementById('chevron');const open=b.style.display==='none';b.style.display=open?'':'none';c.classList.toggle('open',open);}
 
 // ── XML PARSER ──
-function xmlAttr(tag, attr) {
-  const m = tag.match(new RegExp(attr + '="([^"]*)"'));
-  return m ? m[1] : '';
-}
-function xmlContent(tag) {
-  return tag.replace(/<[^>]+>/g,'').trim();
-}
-
-function parseXML(text) {
-  const result = { overview:'', insights:[], timeline:[], year_activity:[] };
-
-  // overview
-  const ov = text.match(/<overview>([\s\S]*?)<\/overview>/);
-  if (ov) result.overview = ov[1].trim();
-
-  // insights
-  const insightRe = /<insight([^>]*)>([\s\S]*?)<\/insight>/g;
-  let im;
-  while ((im = insightRe.exec(text)) !== null) {
-    result.insights.push({
-      icon: xmlAttr(im[1],'icon') || '💡',
-      title: xmlAttr(im[1],'title') || '',
-      body: im[2].trim()
-    });
+function xmlAttr(str,attr){const m=str.match(new RegExp(attr+'="([^"]*)"'));return m?m[1]:'';}
+function parseXML(text){
+  const R={key_insight:'',key_insight_url:'',overview:'',insights:[],timeline:[],year_activity:[],competitors:[],signals:[]};
+  const ki=text.match(/<key_insight([^>]*)>([\s\S]*?)<\/key_insight>/);
+  if(ki){R.key_insight=ki[2].trim();R.key_insight_url=xmlAttr(ki[1],'url');}
+  const ov=text.match(/<overview>([\s\S]*?)<\/overview>/);
+  if(ov)R.overview=ov[1].trim();
+  const iRe=/<insight([^>]*)>([\s\S]*?)<\/insight>/g;let im;
+  while((im=iRe.exec(text))!==null){
+    R.insights.push({icon:xmlAttr(im[1],'icon')||'💡',title:xmlAttr(im[1],'title'),body:im[2].trim(),url:xmlAttr(im[1],'url')});
   }
-
-  // events
-  const eventRe = /<event([^>]*)>([\s\S]*?)<\/event>/g;
-  let em;
-  while ((em = eventRe.exec(text)) !== null) {
-    const attrs = em[1];
-    const body = em[2].trim();
-    const featMatch = body.match(/功能特性[：:](.*)/);
-    const desc = body.replace(/功能特性[：:].*/, '').trim();
-    const features = featMatch ? featMatch[1].split(/[、,，]/).map(f=>f.trim()).filter(Boolean) : [];
-    result.timeline.push({
-      date: xmlAttr(attrs,'date'),
-      type: xmlAttr(attrs,'type') || 'update',
-      title: xmlAttr(attrs,'title'),
-      body: desc,
-      features,
-      source: xmlAttr(attrs,'source'),
-      url: xmlAttr(attrs,'url')
-    });
+  const eRe=/<event([^>]*)>([\s\S]*?)<\/event>/g;let em;
+  while((em=eRe.exec(text))!==null){
+    const attrs=em[1],body=em[2].trim();
+    const fm=body.match(/功能特性[：:](.*)/);
+    const desc=body.replace(/功能特性[：:].*/,'').trim();
+    const features=fm?fm[1].split(/[、,，]/).map(f=>f.trim()).filter(Boolean):[];
+    R.timeline.push({date:xmlAttr(attrs,'date'),type:xmlAttr(attrs,'type')||'update',title:xmlAttr(attrs,'title'),body:desc,features,source:xmlAttr(attrs,'source'),url:xmlAttr(attrs,'url')});
   }
-
-  // year activity
-  const yearCounts = {};
-  result.timeline.forEach(t => {
-    const y = (t.date||'').slice(0,4);
-    if (/^20\d{2}$/.test(y)) yearCounts[y] = (yearCounts[y]||0)+1;
-  });
-  result.year_activity = Object.entries(yearCounts).map(([year,count])=>({year,count}));
-
-  return result;
+  const cRe=/<competitor([^>]*)>([\s\S]*?)<\/competitor>/g;let cm;
+  while((cm=cRe.exec(text))!==null){
+    R.competitors.push({name:xmlAttr(cm[1],'name'),score:parseInt(xmlAttr(cm[1],'score'))||50,color:xmlAttr(cm[1],'color')||'#3b82f6',body:cm[2].trim()});
+  }
+  const sRe=/<signal([^>]*)>([\s\S]*?)<\/signal>/g;let sm;
+  while((sm=sRe.exec(text))!==null){
+    R.signals.push({type:xmlAttr(sm[1],'type')||'watch',label:xmlAttr(sm[1],'label'),body:sm[2].trim()});
+  }
+  const yc={};
+  R.timeline.forEach(t=>{const y=(t.date||'').slice(0,4);if(/^20\d{2}$/.test(y))yc[y]=(yc[y]||0)+1;});
+  R.year_activity=Object.entries(yc).map(([year,count])=>({year,count}));
+  return R;
 }
 
-async function doSearch() {
-  const apiKey = document.getElementById('apiKey').value.trim();
-  if (!apiKey || !apiKey.startsWith('sk-ant-')) {
+// ── BUILD PROMPT ──
+function buildPrompt(query,mode,timeDesc){
+  const modeInstructions={
+    timeline:`研究"${query}"在${timeDesc}内的完整产品时间线，包括每次发布、升级、固件更新、生态扩展、里程碑事件。`,
+    feature:`深入分析"${query}"在${timeDesc}内的功能演进，对比各代产品核心能力变化、新功能引入、弃用功能。`,
+    market:`分析"${query}"在${timeDesc}内的市场动态，包括市场份额、融资收购、价格策略、行业政策影响。`,
+    competitive:`全面对比"${query}"领域${timeDesc}内的主要竞争玩家，分析各家策略、优劣势、市场定位。`,
+    signal:`分析"${query}"领域${timeDesc}内的行业信号，包括上升趋势、潜在风险、值得关注的弱信号、未来预判。`,
+    news:`搜索"${query}"近期（${timeDesc}）最新新闻，包括产品发布、公告、评测、市场动态。`
+  };
+
+  return `你是专业IoT与智能家居行业分析师。请用网络搜索，${modeInstructions[mode]||modeInstructions.timeline}
+
+必须以下列XML格式输出，严格遵守格式，不要输出任何XML之外的文字：
+
+<report>
+<key_insight url="最重要参考来源URL">用约100字深入总结该产品/领域最核心的战略洞察，需涵盖：当前市场地位、核心技术优势或劣势、近期最重要动态、对行业的影响，以及未来最值得关注的方向。要有深度和具体数据。</key_insight>
+<overview>2-3句整体概述</overview>
+<insight icon="📊" title="洞察标题" url="具体来源URL">洞察内容2-3句，要有具体数据或事实支撑</insight>
+<insight icon="🔍" title="洞察标题2" url="具体来源URL">洞察内容</insight>
+<insight icon="💡" title="洞察标题3" url="具体来源URL">洞察内容</insight>
+<insight icon="⚡" title="洞察标题4" url="具体来源URL">洞察内容</insight>
+<event date="2024-03" type="launch" title="事件标题" source="来源媒体" url="具体文章URL">事件描述2-3句。功能特性：特性A、特性B、特性C</event>
+<event date="2023-11" type="update" title="事件标题" source="来源媒体" url="具体文章URL">事件描述</event>
+<competitor name="公司名" score="75" color="#3b82f6">该竞争者的核心定位与优劣势，1-2句</competitor>
+<signal type="up" label="上升信号">具体信号描述</signal>
+<signal type="down" label="风险信号">具体风险描述</signal>
+<signal type="hot" label="热点">热点描述</signal>
+<signal type="watch" label="值得关注">值得关注的事项</signal>
+</report>
+
+要求：
+- event至少12条，按时间倒序
+- insight至少4条，每条必须有url
+- competitor 3-5个主要玩家，score是市场影响力0-100
+- signal 4-6条不同类型
+- event的url尽量提供真实可点击的文章链接
+- type只能是：launch/update/feature/software/discontinue/partnership/milestone
+- signal type只能是：up/down/hot/watch
+- 所有URL必须是真实存在的链接，不要编造`;
+}
+
+// ── SEARCH ──
+async function doSearch(){
+  const apiKey=document.getElementById('apiKey').value.trim();
+  if(!apiKey||!apiKey.startsWith('sk-ant-')){
     document.getElementById('apiBody').style.display='';
     document.getElementById('chevron').classList.add('open');
     document.getElementById('apiKey').focus();
-    alert('请先在页面底部填写有效的 API Key');
-    return;
+    alert('请先在页面底部填写有效的 API Key');return;
   }
-  const query = document.getElementById('queryInput').value.trim();
-  if (!query) { alert('请输入要查询的产品或主题'); return; }
-
-  const mode = getMode();
-  const timeDesc = getTimeDesc();
-  const btn = document.getElementById('goBtn');
-  btn.disabled=true; btn.classList.add('busy');
+  const query=document.getElementById('queryInput').value.trim();
+  if(!query){alert('请输入要查询的产品或主题');return;}
+  const mode=getMode(),timeDesc=getTimeDesc();
+  const btn=document.getElementById('goBtn');
+  btn.disabled=true;btn.classList.add('busy');
   document.getElementById('goTxt').textContent='研究中…';
   document.getElementById('status').className='status loading';
-  document.getElementById('statusTxt').textContent='正在深度研究「'+query+'」，AI 搜索中…';
+  document.getElementById('statusTxt').textContent='正在深度研究「'+query+'」，AI 实时搜索中…';
   document.getElementById('results').innerHTML='';
-
-  try {
-    // Call Anthropic API directly from browser
-    const modeText = {
-      timeline:'产品发布、升级、迭代历史',
-      feature:'功能演进与各代对比',
-      market:'市场动态、融资、竞品格局',
-      news:'最新新闻与动态'
-    }[mode]||'产品时间线';
-
-    const prompt = `你是科技产品研究员。请用网络搜索深入研究"${query}"在${timeDesc}内的${modeText}。
-
-搜索完成后，用以下XML格式输出结果：
-
-<report>
-<overview>整体概述2-3句话</overview>
-<insight icon="📊" title="洞察标题1">洞察内容</insight>
-<insight icon="🔍" title="洞察标题2">洞察内容</insight>
-<insight icon="💡" title="洞察标题3">洞察内容</insight>
-<event date="2024-03" type="launch" title="事件标题" source="来源">事件描述。功能特性：特性A、特性B</event>
-</report>
-
-type只能是：launch/update/feature/software/discontinue/partnership/milestone
-至少输出10个event，按时间倒序。只输出XML。`;
-
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 8000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user', content: prompt }]
-      })
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:8000,tools:[{type:'web_search_20250305',name:'web_search'}],messages:[{role:'user',content:buildPrompt(query,mode,timeDesc)}]})
     });
-    const data = await r.json();
-    if (!r.ok) throw new Error(data.error?.message || 'HTTP '+r.status);
-    const rawText = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
-    if (!rawText) throw new Error('AI未返回内容，请重试');
-
-    const parsed = parseXML(rawText);
-    parsed.subject = query;
-    parsed.mode = mode;
-    parsed.timespan = timeDesc;
-
-    if (parsed.timeline.length === 0) throw new Error('未能解析到时间线内容，请重试');
-
+    const data=await r.json();
+    if(!r.ok)throw new Error(data.error?.message||'HTTP '+r.status);
+    const rawText=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    if(!rawText)throw new Error('AI未返回内容，请重试');
+    const parsed=parseXML(rawText);
+    parsed.subject=query;parsed.mode=mode;parsed.timespan=timeDesc;
+    if(parsed.timeline.length===0&&parsed.insights.length===0)throw new Error('未能解析到报告内容，请重试');
     document.getElementById('status').className='status';
     renderReport(parsed);
-  } catch(e) {
+  }catch(e){
     document.getElementById('status').className='status error';
     document.getElementById('statusTxt').textContent='研究失败：'+e.message;
     document.getElementById('results').innerHTML='<div class="empty"><div class="empty-ico">⚠️</div><div class="empty-title">出错了</div><div class="empty-desc">'+e.message+'</div></div>';
-  } finally {
-    btn.disabled=false; btn.classList.remove('busy');
+  }finally{
+    btn.disabled=false;btn.classList.remove('busy');
     document.getElementById('goTxt').textContent='分析 →';
   }
 }
 
-const typeLabels={
-  launch:['badge-launch','🚀 发布'],update:['badge-update','⬆ 升级'],
-  feature:['badge-feature','✨ 功能'],software:['badge-software','💻 软件'],
-  discontinue:['badge-discontinue','🔴 停产'],partnership:['badge-partnership','🤝 合作'],
-  milestone:['badge-milestone','🏆 里程碑']
-};
-const dotColors={
-  launch:'var(--accent)',update:'var(--green)',feature:'var(--teal)',
-  software:'var(--purple)',discontinue:'var(--red)',partnership:'var(--amber)',milestone:'#92400e'
-};
+// ── RENDER ──
+const typeLabels={launch:['badge-launch','🚀 发布'],update:['badge-update','⬆ 升级'],feature:['badge-feature','✨ 功能'],software:['badge-software','💻 软件'],discontinue:['badge-discontinue','🔴 停产'],partnership:['badge-partnership','🤝 合作'],milestone:['badge-milestone','🏆 里程碑']};
+const dotColors={launch:'var(--blue)',update:'var(--green)',feature:'var(--teal)',software:'var(--purple)',discontinue:'var(--red)',partnership:'var(--amber)',milestone:'#92400e'};
+const signalStyles={up:'signal-up',down:'signal-down',hot:'signal-hot',watch:'signal-watch'};
+const signalIcons={up:'↑',down:'↓',hot:'🔥',watch:'👁'};
+const modeLabelMap={timeline:'产品时间线',feature:'功能演进',market:'市场动态',competitive:'竞争格局',signal:'行业信号',news:'最新资讯'};
 
-function renderReport(d) {
-  const timeline=d.timeline||[], insights=d.insights||[], ya=d.year_activity||[];
-  const modeLabel={timeline:'产品时间线报告',feature:'功能演进报告',market:'市场动态报告',news:'最新资讯报告'};
+function renderReport(d){
+  const tl=d.timeline||[],ins=d.insights||[],ya=d.year_activity||[],comp=d.competitors||[],sigs=d.signals||[];
   let html='<div class="report">';
 
-  html+=`<div class="report-head">
-    <div class="report-eyebrow">${modeLabel[d.mode]||'深度报告'} · ${d.timespan}</div>
-    <div class="report-title"><em>${d.subject}</em> 深度情报</div>
-    ${d.overview?`<div class="report-summary">${d.overview}</div>`:''}
-    <div class="report-stats">
-      <div class="stat-item"><div class="stat-num">${timeline.length}</div><div class="stat-label">时间节点</div></div>
-      <div class="stat-item"><div class="stat-num">${insights.length}</div><div class="stat-label">关键洞察</div></div>
-    </div>
-  </div>`;
+  // ── BIG KEY INSIGHT CARD ──
+  if(d.key_insight){
+    const kiUrl=d.key_insight_url&&d.key_insight_url.startsWith('http');
+    html+=`<div class="key-insight-card">
+      <div class="ki-eyebrow">${modeLabelMap[d.mode]||'深度情报'} · ${d.timespan}</div>
+      <div class="ki-subject">${d.subject}</div>
+      <div class="ki-text">${d.key_insight}</div>
+      <div class="ki-meta">
+        <div class="ki-stat"><div class="ki-num">${tl.length}</div><div class="ki-label">时间节点</div></div>
+        <div class="ki-stat"><div class="ki-num">${ins.length}</div><div class="ki-label">洞察</div></div>
+        ${comp.length?`<div class="ki-stat"><div class="ki-num">${comp.length}</div><div class="ki-label">竞争者</div></div>`:''}
+        ${sigs.length?`<div class="ki-stat"><div class="ki-num">${sigs.length}</div><div class="ki-label">行业信号</div></div>`:''}
+      </div>
+      ${kiUrl?`<div class="ki-source">来源：<a href="${d.key_insight_url}" target="_blank" rel="noopener">${d.key_insight_url.replace(/^https?:\/\//,'').slice(0,50)}</a></div>`:''}
+    </div>`;
+  }
 
+  // overview
+  if(d.overview){
+    html+=`<div class="report-head">
+      <div class="report-eyebrow">概述 · ${d.timespan}</div>
+      <div class="report-overview">${d.overview}</div>
+    </div>`;
+  }
+
+  // signals
+  if(sigs.length>0){
+    html+=`<div class="section-title">行业信号</div><div class="signals-row">`;
+    sigs.forEach(s=>{
+      html+=`<div class="signal-tag ${signalStyles[s.type]||'signal-watch'}" title="${s.body}">${signalIcons[s.type]||'·'} ${s.label}</div>`;
+    });
+    html+=`</div>`;
+  }
+
+  // year activity
   if(ya.length>0){
     const max=Math.max(...ya.map(y=>y.count),1);
     html+=`<div class="trend-section"><div class="trend-title">活跃度趋势 · 每年事件数</div><div class="trend-bars">`;
@@ -530,24 +639,42 @@ function renderReport(d) {
     html+=`</div></div>`;
   }
 
-  if(insights.length>0){
-    html+=`<div class="section-title">关键洞察</div><div class="insights-grid">`;
-    insights.forEach(ins=>{
-      html+=`<div class="insight-card"><div class="insight-icon">${ins.icon}</div><div class="insight-title">${ins.title}</div><div class="insight-body">${ins.body}</div></div>`;
+  // competitors
+  if(comp.length>0){
+    html+=`<div class="section-title">竞争格局</div><div class="comp-grid">`;
+    comp.forEach(c=>{
+      html+=`<div class="comp-card">
+        <div class="comp-name">${c.name}</div>
+        <div class="comp-pos">${c.body}</div>
+        <div class="comp-bar-wrap"><div class="comp-bar" style="width:0%;background:${c.color}" data-w="${c.score}%"></div></div>
+      </div>`;
     });
     html+=`</div>`;
   }
 
-  if(timeline.length>0){
-    const usedTypes=[...new Set(timeline.map(t=>t.type))];
-    html+=`<div class="section-title">时间线</div><div class="legend">`;
-    usedTypes.forEach(type=>{
-      const [,label]=typeLabels[type]||['',''+type];
-      html+=`<div class="legend-item"><div class="legend-dot" style="background:${dotColors[type]||'#999'}"></div>${label}</div>`;
+  // insights
+  if(ins.length>0){
+    html+=`<div class="section-title">关键洞察</div><div class="insights-grid">`;
+    ins.forEach(i=>{
+      const hasUrl=i.url&&i.url.startsWith('http');
+      html+=`<div class="insight-card">
+        <div class="insight-top"><div class="insight-icon">${i.icon}</div><div class="insight-title">${i.title}</div></div>
+        <div class="insight-body">${i.body}</div>
+        ${hasUrl?`<div class="insight-src"><a href="${i.url}" target="_blank" rel="noopener">🔗 查看来源 →</a></div>`:''}
+      </div>`;
     });
+    html+=`</div>`;
+  }
+
+  // timeline
+  if(tl.length>0){
+    const usedTypes=[...new Set(tl.map(t=>t.type))];
+    html+=`<div class="section-title">时间线</div>`;
+    html+=`<div class="legend">`;
+    usedTypes.forEach(type=>{const[,label]=typeLabels[type]||['',''+type];html+=`<div class="legend-item"><div class="legend-dot" style="background:${dotColors[type]||'#999'}"></div>${label}</div>`;});
     html+=`</div><div class="timeline-section"><div class="timeline">`;
-    timeline.forEach(item=>{
-      const [badgeCls,badgeLabel]=typeLabels[item.type]||['badge-update',item.type];
+    tl.forEach(item=>{
+      const[badgeCls,badgeLabel]=typeLabels[item.type]||['badge-update',item.type];
       const dc=dotColors[item.type]||'var(--ink3)';
       const hasUrl=item.url&&item.url.startsWith('http');
       const feats=(item.features||[]).filter(Boolean);
@@ -574,13 +701,12 @@ function renderReport(d) {
   html+='</div>';
   document.getElementById('results').innerHTML=html;
 
-  // animate bars
   setTimeout(()=>{
-    document.querySelectorAll('.trend-bar').forEach(b=>{
+    document.querySelectorAll('.trend-bar,.comp-bar').forEach(b=>{
       const w=b.getAttribute('data-w');
-      requestAnimationFrame(()=>setTimeout(()=>{b.style.width=w;},50));
+      requestAnimationFrame(()=>setTimeout(()=>{b.style.width=w;},60));
     });
-  },100);
+  },120);
 
   window.scrollTo({top:document.getElementById('results').offsetTop-20,behavior:'smooth'});
 }
