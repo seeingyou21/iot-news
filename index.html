@@ -1002,7 +1002,8 @@ async function doSearch() {
 
 type说明: launch=新产品/型号发布, update=重大升级, feature=功能更新, software=软件/固件更新, discontinue=停产停服, partnership=合作/收购, milestone=里程碑
 timeline按时间倒序排列（最新在前），至少包含10条事件，insights至少3条。
-year_activity统计每年事件数量用于可视化。`;
+year_activity统计每年事件数量用于可视化。
+重要格式规则：所有字符串值中不得有未转义的双引号；body字段内容用单句表达，不超过100字；features数组每项不超过20字。`;
 
   const btn = document.getElementById('goBtn');
   btn.disabled = true; btn.classList.add('busy');
@@ -1022,8 +1023,24 @@ year_activity统计每年事件数量用于可视化。`;
 
     const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
     const m = text.match(/\{[\s\S]*\}/);
-    if (!m) throw new Error('返回格式异常，请重试');
-    const parsed = JSON.parse(m[0]);
+    if (!m) throw new Error('AI未返回结构化数据，请重试');
+    let parsed;
+    try {
+      parsed = JSON.parse(m[0]);
+    } catch (jsonErr) {
+      // Try to salvage truncated JSON
+      const raw = m[0];
+      const attempts = [
+        raw.replace(/,?\s*\{[^{}]*$/, '') + ']}',
+        raw.replace(/,?\s*\{[^{}]*$/, '') + ']}}',
+        raw.replace(/,\s*\{[^}]*$/, '') + ']}',
+      ];
+      let ok = false;
+      for (const a of attempts) {
+        try { parsed = JSON.parse(a); ok = true; break; } catch {}
+      }
+      if (!ok) throw new Error('返回数据格式错误，请重试');
+    }
 
     document.getElementById('status').className = 'status';
     renderReport(parsed);
